@@ -34,28 +34,41 @@ One run each, on one machine; your numbers will depend on your model's latency.
 
 ## Install
 
+### Hermes Agent
+
+```bash
+hermes skills install Nanako0129/computer-use-fast/skills/computer-use-fast
+```
+
+Hermes tracks it from then on: `hermes skills check` reports when a new version is out and
+`hermes skills update` installs it. Add `--category <folder>` to choose
+which category folder it goes into.
+
 ### Claude Code
 
 ```bash
-git clone https://github.com/Nanako0129/computer-use-fast ~/.claude/skills/computer-use-fast
+git clone https://github.com/Nanako0129/computer-use-fast ~/src/computer-use-fast
+mkdir -p ~/.claude/skills
+cp -R ~/src/computer-use-fast/skills/computer-use-fast ~/.claude/skills/
 ```
 
-Update later with `git -C ~/.claude/skills/computer-use-fast pull`.
+To update: `git -C ~/src/computer-use-fast pull`, then run the `cp -R` line again.
 
 ### Any other agent that reads `SKILL.md`
 
-Clone the repository into that agent's skills folder, the same way. The skill refers to its script as
-`scripts/cu.py` next to `SKILL.md`.
+Copy `skills/computer-use-fast/` into that agent's skills folder. The skill calls its script as
+`scripts/cu.py` next to `SKILL.md`, so keep the two together.
 
 ### Check that it works
 
+Replace `<skill>` with the folder you installed to (for example `~/.claude/skills/computer-use-fast`).
+
 ```bash
-python3 ~/.claude/skills/computer-use-fast/scripts/test_cu.py     # no driver needed, prints "ok"
-python3 ~/.claude/skills/computer-use-fast/scripts/cu.py --app Calculator --open --type "1+1=" --read
+python3 <skill>/scripts/test_cu.py     # no driver needed, prints "ok"
+python3 <skill>/scripts/cu.py --app Calculator --open --type "1+1=" --read
 ```
 
-The second command should open Calculator and print a line containing `2`. Change the path if you installed
-somewhere else.
+The second command should open Calculator and print a line containing `2`.
 
 ## Using `cu.py` directly
 

@@ -32,26 +32,40 @@ agent 一步一步操作 Mac 時，時間幾乎都不是花在點擊上。在 Ma
 
 ## 安裝
 
+### Hermes Agent
+
+```bash
+hermes skills install Nanako0129/computer-use-fast/skills/computer-use-fast
+```
+
+裝好之後 Hermes 會持續追蹤：有新版時 `hermes skills check` 會提示，`hermes skills update` 就會更新。
+想指定放在哪個分類資料夾，加上 `--category <資料夾>`。
+
 ### Claude Code
 
 ```bash
-git clone https://github.com/Nanako0129/computer-use-fast ~/.claude/skills/computer-use-fast
+git clone https://github.com/Nanako0129/computer-use-fast ~/src/computer-use-fast
+mkdir -p ~/.claude/skills
+cp -R ~/src/computer-use-fast/skills/computer-use-fast ~/.claude/skills/
 ```
 
-之後要更新：`git -C ~/.claude/skills/computer-use-fast pull`。
+之後要更新：`git -C ~/src/computer-use-fast pull`，再執行一次 `cp -R` 那一行。
 
 ### 其他會讀 `SKILL.md` 的 agent
 
-一樣 clone 到那個 agent 的 skills 資料夾。skill 會用 `SKILL.md` 旁邊的 `scripts/cu.py`。
+把 `skills/computer-use-fast/` 複製到那個 agent 的 skills 資料夾。skill 會用 `SKILL.md` 旁邊的
+`scripts/cu.py`，兩者要放在一起。
 
 ### 確認裝好了
 
+把 `<skill>` 換成你安裝的資料夾（例如 `~/.claude/skills/computer-use-fast`）。
+
 ```bash
-python3 ~/.claude/skills/computer-use-fast/scripts/test_cu.py     # 不需要 driver，印出 "ok"
-python3 ~/.claude/skills/computer-use-fast/scripts/cu.py --app Calculator --open --type "1+1=" --read
+python3 <skill>/scripts/test_cu.py     # 不需要 driver，印出 "ok"
+python3 <skill>/scripts/cu.py --app Calculator --open --type "1+1=" --read
 ```
 
-第二行應該會打開計算機，印出一行含有 `2` 的結果。裝在別的位置的話，把路徑換掉。
+第二行應該會打開計算機，印出一行含有 `2` 的結果。
 
 ## 直接使用 `cu.py`
 
