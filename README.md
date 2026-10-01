@@ -70,35 +70,81 @@ python3 <skill>/scripts/cu.py --app Calculator --open --type "1+1=" --read
 
 The second command should open Calculator and print a line containing `2`.
 
+### Chrome, Edge, Brave, Arc and Electron apps (optional)
+
+Chromium browsers and Electron apps (Discord, VS Code …) show only their menu bar to accessibility clients until
+one asks them to build the rest. `cu.py` asks through a 20-line helper, which macOS only lets run after you allow
+it once:
+
+```bash
+mkdir -p ~/.local/share/computer-use-fast
+swiftc -O <skill>/scripts/axenable.swift -o ~/.local/share/computer-use-fast/cu-axenable
+~/.local/share/computer-use-fast/cu-axenable 1   # prints "not trusted: …" the first time
+```
+
+Then open **System Settings → Privacy & Security → Accessibility**, press **+**, press **⌘⇧G**, paste
+`~/.local/share/computer-use-fast/cu-axenable` and make sure its switch is on. The binary lives outside the skill
+folder on purpose: updating the skill must not replace the file you allowed. Rebuilding it does, so allow it again
+after a rebuild. Without the helper, `cu.py` prints a `note` and Safari remains the browser to use.
+
 ## Using `cu.py` directly
 
 ```bash
 cu.py --app "System Settings" --open --click General --click About --read Chip
 cu.py --app Calculator --open --type "56*123=" --read --shot
-cu.py --app Safari --key cmd+l --type "example.com" --key return
+cu.py --app Safari --url https://en.wikipedia.org/wiki/Rosetta_Stone --wait-for "Rosetta Stone" --click "Ptolemy V Epiphanes" --read Born
+cu.py --app Safari --fill "Search Wikipedia=Hieroglyphs" --key return --wait-for "Egyptian hieroglyphs"
+cu.py --app TextEdit --open --menu "File > New" --type "hello" --read hello
+cu.py --app Finder --click Applications --wait-for Calculator --read Calculator
 ```
 
 | Step | Does |
 |---|---|
 | `--app NAME` | English name, localized name (e.g. 計算機) or bundle id |
 | `--open` | launch the app if needed and wait for its window |
-| `--url URL` | `open` a URL first |
-| `--click TEXT` | click the element whose visible text matches (exact, then prefix, then substring); confirm the window changed |
+| `--window TITLE` | act on the window whose title contains TITLE (default: the frontmost window with content) |
+| `--url URL` | open a URL in the `--app` browser |
+| `--click TEXT` | click the element whose visible text matches (exact, then prefix, then substring); `--double`, `--right` likewise |
+| `--fill LABEL=TEXT` | set a text field found by its label, tooltip or placeholder, or the only field in the toolbar |
 | `--type TEXT` | type into the focused field |
 | `--key KEY` | `return`, `escape`, `tab`, or a chord like `cmd+n` |
-| `--wait SEC` | pause |
+| `--menu "A > B"` | invoke a menu-bar item by its path |
+| `--scroll DIR[:N]` | `up` / `down` / `left` / `right`, N notches (default 5) |
+| `--wait-for TEXT` | wait up to 15 s until TEXT is on screen |
+| `--wait SEC` | plain pause |
 | `--read [FILTER]` | print visible text; with a filter, each match and the line after it (`Chip \| Apple M1`) |
 | `--shot` | save the window as PNG and print the path (`CU_SHOT_DIR`, else `~/.hermes/cache/images` if it exists, else the temp folder) |
 
+Along the way it switches to a window that an action opened, looks in the app's other windows (dialogs, sheets)
+when a `--click` target isn't in the current one, mouse-clicks rows that ignore an accessibility press (Finder's
+sidebar), and fills web inputs by typing because pages ignore direct value writes.
+
 Labels are in the system language: on a Traditional Chinese system it is `--click 一般`, not `--click General`.
 
-Exit codes: `0` ok · `2` driver error · `3` target not found (the clickable labels are printed) · `4` the click
-changed nothing.
+Exit codes: `0` ok · `2` driver error · `3` target not found (the candidates are printed) · `4` `--wait-for`
+timed out. Clicking something already selected prints `(no visible change)` and continues.
+
+## Tested apps
+
+Every app on one MacBook Air (macOS 27, Traditional Chinese), opened and read once with `--open --read`
+(2026-10-01): **57 of 75** read fine, among them Safari, Chrome (with `cu-axenable`), Discord, VS Code,
+Claude, Microsoft Word/Excel/PowerPoint, Keynote, Mail, Notes, Contacts, Calendar, Finder, System Settings,
+Automator, Preview and Music. Seven were skipped on purpose (VPN clients, virtual machines, apps that turn
+the camera on). The rest:
+
+| Kind | Apps | What `cu.py` says |
+|---|---|---|
+| Menu-bar or background agents | Amphetamine, Maccy, ZeroTier, LogiPluginService … | "runs only as a menu-bar or background agent" |
+| Running with every window closed | Spotify, Telegram, Freeform, Stickies | "running but has no window" |
+| Flutter, drawn without accessibility text | RustDesk, Cloudflare WARP | use step-by-step computer use |
+| Not windowed apps at all | Mission Control, Time Machine, Apps | — |
 
 ## Limits
 
 - Apps without accessibility text (Flutter apps such as RustDesk, games, canvases) can't be matched by text.
   The skill tells the agent to fall back to its own computer-use tool for those.
+- Very large trees are read shallowly: when a full walk passes the driver's 20 s budget (Music with a big
+  library), `cu.py` retries at depth 10, which keeps the sidebar and toolbar.
 - Admin prompts (an unlock button, a password dialog) stay with the person: the skill tells the agent to stop and
   say which button needs them. `cu.py` itself has no password handling.
 - macOS only.

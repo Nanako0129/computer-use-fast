@@ -1,7 +1,7 @@
 ---
 name: computer-use-fast
 description: Do GUI tasks on a Mac in as few agent turns as possible. Try a shell command first, then run the whole click/type/read sequence in ONE terminal call with scripts/cu.py, and fall back to step-by-step computer use only for apps with no accessibility text. Load before any desktop or app task on macOS.
-version: 2.0.0
+version: 2.1.0
 author: Nanako Tsai
 license: MIT
 platforms: [macos]
@@ -38,9 +38,13 @@ Only open the GUI when the person asked to *see* or *change* something on screen
 `scripts/cu.py` sits next to this file. Use its absolute path.
 
 ```bash
-python3 <this skill>/scripts/cu.py --app "System Settings" --open --click General --click About --read Chip
-python3 <this skill>/scripts/cu.py --app Calculator --open --type "56*123=" --read --shot
-python3 <this skill>/scripts/cu.py --app Safari --key cmd+l --type "example.com" --key return
+CU="python3 <this skill>/scripts/cu.py"
+$CU --app "System Settings" --open --click General --click About --read Chip
+$CU --app Calculator --open --type "56*123=" --read --shot
+$CU --app Safari --url https://en.wikipedia.org/wiki/Rosetta_Stone --wait-for "Rosetta Stone" --click "Ptolemy V Epiphanes" --read Born
+$CU --app Safari --fill "Search Wikipedia=Hieroglyphs" --key return --wait-for "Egyptian hieroglyphs"
+$CU --app TextEdit --open --menu "File > New" --type "hello" --read hello
+$CU --app Finder --click Applications --wait-for Calculator --read Calculator
 ```
 
 Steps run in the order given:
@@ -49,19 +53,42 @@ Steps run in the order given:
 |---|---|
 | `--app NAME` | English name, localized name (e.g. 計算機) or bundle id |
 | `--open` | launch the app if needed and wait for its window |
-| `--url URL` | `open` a URL first (combine with `--app` for the app it opens) |
-| `--click TEXT` | click the element whose visible text matches (exact, then prefix, then substring), then confirm the window changed |
+| `--window TITLE` | act on the app window whose title contains TITLE (default: the frontmost one with content) |
+| `--url URL` | open a URL in the `--app` browser (Safari, Chrome …) |
+| `--click TEXT` | click the element whose visible text matches (exact, then prefix, then substring); `--double`, `--right` likewise |
+| `--fill LABEL=TEXT` | set a text field found by its label, tooltip or placeholder (or the only field in the toolbar) |
 | `--type TEXT` | type into the focused field |
 | `--key KEY` | `return`, `escape`, `tab`, or a chord like `cmd+n` |
-| `--wait SEC` | pause |
+| `--menu "A > B"` | invoke a menu-bar item by path, e.g. `"File > New"` (`"檔案 > 新增"` on a Chinese system) |
+| `--scroll DIR[:N]` | `up`, `down`, `left`, `right`, N notches (default 5) |
+| `--wait-for TEXT` | wait up to 15 s until TEXT is on screen (page loads, dialogs) |
+| `--wait SEC` | plain pause |
 | `--read [FILTER]` | print visible text; with a filter, each match **and the line after it** (label → value, e.g. `Chip | Apple M1`) |
 | `--shot` | save the window as a PNG and print its path; send that file when asked for a screenshot |
+
+What it handles for you, so you don't spend turns on it:
+
+- **New windows.** After `--menu`, `--click`, `--key` or `--url`, a window that appeared (a new document, a
+  preferences window) becomes the target.
+- **Dialogs and sheets.** If `--click` can't find the text in the current window it looks in the app's other
+  windows, so `--click Cancel` reaches a confirmation alert.
+- **Rows that ignore a press** (Finder's sidebar) get a real mouse click at their centre.
+- **Web pages.** Safari exposes the whole page; links, buttons and inputs match by their text. Web inputs are
+  filled by typing, because pages ignore direct value writes.
+- **Chrome, Edge, Brave, Arc and Electron apps** (Discord, VS Code …) show only their menus until asked;
+  `cu.py` asks through `cu-axenable` (see the repository README). Without it you will see a `note` line and
+  only menus: use Safari for web pages, or Tier 3.
+- **Clicking what is already selected** reports `(no visible change)` and carries on; assert outcomes with
+  `--wait-for` or `--read`, not with the click.
 
 Labels are whatever the app shows in the system language: on a Traditional Chinese system it is `--click 一般`,
 not `--click General`.
 
-Exit codes: **0** ok. **3** target not found: the output lists the clickable labels; pick the right one and rerun,
-don't take a screenshot to look for it. **4** the click had no visible effect. **2** driver error.
+Exit codes: **0** ok. **3** target not found: the output lists the candidates; pick the right one and rerun,
+don't take a screenshot to look for it. **4** `--wait-for` timed out. **2** driver error.
+
+A first-run sheet (a privacy notice, "What's New") sits over an app until someone dismisses it. If it asks the
+person to agree to something, don't click through it for them.
 
 Measured on the same Mac: System Settings → General → About → read the chip in **12 s**, and Calculator type +
 read + screenshot in **4 s**, each as one call. End to end through an agent, the two tasks went from 108 s and
