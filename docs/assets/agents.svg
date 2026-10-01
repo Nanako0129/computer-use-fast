@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 420" width="960" height="420" role="img" aria-labelledby="t d">
+  <title id="t">Three agents, three tasks: median seconds over three runs</title>
+  <desc id="d">Claude Code (claude-opus-5-5): System Settings 29.3 s, Calculator 14.3 s, Safari 24.6 s. Hermes (gemini-3.8-flash): 37.0, 24.9, 38.3 s. Grok CLI (grok-4.7-build): 52.6, 23.6, 75.8 s. 27 of 27 runs answered correctly.</desc>
+  <style>
+    .bg{fill:#fcfcfb}.ink{fill:#0b0b0b}.ink2{fill:#52514e}.muted{fill:#8a8983}.grid{stroke:#e7e6e1}
+    .s1{fill:#2a78d6}.s2{fill:#eb6834}.s3{fill:#1baf7a}
+    text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang TC","Noto Sans TC",sans-serif}
+    @media (prefers-color-scheme: dark){
+      .bg{fill:#1a1a19}.ink{fill:#ffffff}.ink2{fill:#c3c2b7}.muted{fill:#8f8e86}.grid{stroke:#30302d}
+      .s1{fill:#3987e5}.s2{fill:#d95926}.s3{fill:#199e70}
+    }
+  </style>
+  <rect class="bg" width="960" height="420" rx="12"/>
+  <text class="ink" x="32" y="44" font-size="22" font-weight="700">Three agents, same tasks, same Mac</text>
+  <text class="ink2" x="32" y="70" font-size="15">Median of 3 runs, seconds, lower is better · 27 of 27 runs answered correctly · English prompts, zh-TW system</text>
+  <g font-size="14">
+    <rect class="s1" x="32" y="90" width="14" height="14" rx="3"/><text class="ink2" x="52" y="102">Claude Code · claude-opus-5-5</text>
+    <rect class="s2" x="300" y="90" width="14" height="14" rx="3"/><text class="ink2" x="320" y="102">Hermes · gemini-3.8-flash</text>
+    <rect class="s3" x="540" y="90" width="14" height="14" rx="3"/><text class="ink2" x="560" y="102">Grok CLI · grok-4.7-build</text>
+  </g>
+  <!-- scale 0..80 s over x 250..890 (640 px) => 8 px/s -->
+  <g class="grid" stroke-width="1">
+    <line x1="250" y1="124" x2="250" y2="384"/><line x1="410" y1="124" x2="410" y2="384"/>
+    <line x1="570" y1="124" x2="570" y2="384"/><line x1="730" y1="124" x2="730" y2="384"/>
+    <line x1="890" y1="124" x2="890" y2="384"/>
+  </g>
+  <g class="muted" font-size="12" text-anchor="middle">
+    <text x="250" y="402">0</text><text x="410" y="402">20</text><text x="570" y="402">40</text><text x="730" y="402">60</text><text x="890" y="402">80 s</text>
+  </g>
+
+  <text class="ink" x="32" y="160" font-size="15" font-weight="600">System Settings</text>
+  <text class="ink2" x="32" y="180" font-size="13">General → About, the chip</text>
+  <rect class="s1" x="250" y="136" width="234.4" height="20" rx="4"/><text class="ink" x="492" y="151" font-size="13">29.3 s</text>
+  <rect class="s2" x="250" y="158" width="296" height="20" rx="4"/><text class="ink" x="554" y="173" font-size="13">37.0 s</text>
+  <rect class="s3" x="250" y="180" width="420.8" height="20" rx="4"/><text class="ink" x="679" y="195" font-size="13">52.6 s</text>
+
+  <text class="ink" x="32" y="244" font-size="15" font-weight="600">Calculator</text>
+  <text class="ink2" x="32" y="264" font-size="13">56 × 123, read the display</text>
+  <rect class="s1" x="250" y="220" width="114.4" height="20" rx="4"/><text class="ink" x="372" y="235" font-size="13">14.3 s</text>
+  <rect class="s2" x="250" y="242" width="199.2" height="20" rx="4"/><text class="ink" x="457" y="257" font-size="13">24.9 s</text>
+  <rect class="s3" x="250" y="264" width="188.8" height="20" rx="4"/><text class="ink" x="447" y="279" font-size="13">23.6 s</text>
+
+  <text class="ink" x="32" y="328" font-size="15" font-weight="600">Safari</text>
+  <text class="ink2" x="32" y="348" font-size="13">Wikipedia, follow a link, a date</text>
+  <rect class="s1" x="250" y="304" width="196.8" height="20" rx="4"/><text class="ink" x="455" y="319" font-size="13">24.6 s</text>
+  <rect class="s2" x="250" y="326" width="306.4" height="20" rx="4"/><text class="ink" x="564" y="341" font-size="13">38.3 s</text>
+  <rect class="s3" x="250" y="348" width="606.4" height="20" rx="4"/><text class="ink" x="864" y="363" font-size="13">75.8 s</text>
+</svg>

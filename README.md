@@ -20,6 +20,8 @@
   window, are the exceptions. The driver runs natively on your Mac, not in a container or VM. [Measured →](docs/benchmarks.md#5-does-it-take-over-the-screen)
 - **Works on most apps.** 58 of the 74 apps tested on one Mac, including Safari, Chrome, Discord, VS Code,
   Word, Excel, Keynote, Mail, Notes, Finder and System Settings. Apps with nothing to drive get a clear reason.
+- **Tested with three agents.** Claude Code, Hermes and Grok CLI each did System Settings, Calculator and a
+  Safari task three times: 27 of 27 correct, Claude Code fastest at 14–29 s. [Results →](docs/benchmarks.md#6-three-agents-three-tasks-three-runs-each)
 - **Any system language, no API key.** Localized app and button names work (計算機, 一般). It all runs on
   your Mac.
 - **For Hermes, Claude Code, or any agent that reads `SKILL.md`.** One command installs it, and one updates it.

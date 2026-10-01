@@ -134,28 +134,34 @@ Calculator and System Settings and opening a Safari URL brought those apps to th
 
 ## 6. Three agents, three tasks, three runs each
 
-`bench/agent_smoke.py` gives each agent the same English prompt, resets the app, and checks the answer. Same
-Mac (system language Traditional Chinese, so the prompt's English labels don't match the screen), skill
-installed for each agent. 2026-10-01, all runs passed.
+![Three agents, same tasks](assets/agents.svg)
 
-| Task | Hermes (`gemini-3.8-flash`) | Grok CLI (`grok-4.7-build`) |
-|---|---|---|
-| System Settings → General → About, the chip | 75.2 s (110 / 75 / 36) → **37.0 s** after the fix below | 48.1 s (48 / 98 / 41) → **41.8 s** (42 / 43 / 41) |
-| Calculator 56 × 123 | **24.9 s** (25 / 25 / 24) | **19.8 s** (19 / 21 / 20) |
-| Safari: Rosetta Stone → Ptolemy V, birth date | **38.3 s** (50 / 38 / 38) | 150.5 s (151 / 159 / 144) |
+`bench/agent_smoke.py` gives each agent the same English prompt, resets the app, and checks the answer. Same Mac
+(system language Traditional Chinese, so English labels in the prompt don't match the screen), skill installed for
+each agent, all tools allowed. 2026-10-01. **27 of 27 runs answered correctly.**
 
-Medians, with the three runs in brackets. Claude Code is not in the table: its credentials live in the login
-keychain, which an SSH session can't read, so the bench couldn't run it non-interactively yet.
+| Task | Claude Code (`claude-opus-5-5`) | Hermes (`gemini-3.8-flash`) | Grok CLI (`grok-4.7-build`) |
+|---|---|---|---|
+| System Settings → General → About, the chip | **29.3 s** (31 / 29 / 27) | 37.0 s (37 / 66 / 32) | 52.6 s (42 / 53 / 60) |
+| Calculator 56 × 123, read the display | **14.3 s** (14 / 19 / 14) | 24.9 s (25 / 25 / 24) | 23.6 s (24 / 19 / 29) |
+| Safari: Rosetta Stone → Ptolemy V, birth date | **24.6 s** (25 / 25 / 24) | 38.3 s (50 / 38 / 38) | 75.8 s (76 / 61 / 105) |
 
-What the runs showed, and what changed:
+Medians, the three runs in brackets. Claude Code used 4–5 turns per task. Hermes' Calculator and Safari runs
+predate the System Settings fix below, which doesn't touch those paths.
 
-- **System Settings** was slow because the read dropped the pane's buttons (their only text is the AX
-  description) and English labels didn't match the Chinese screen. `cu.py` now reads descriptions and falls
-  back to untranslated identifiers, so `--click General --click About` works on a Chinese system. Grok then did
-  the task in two calls every time. Hermes' remaining spread is its first model turn (35 s in the slow run).
-- **Grok on Safari** had the answer from its first `cu.py` call in 14.2 s. The page also lists "209 BC" in its
-  references, and Grok spent the rest reading `cu.py`'s source to reconcile the two. SKILL.md 2.2.1 tells agents
-  not to do that.
+What earlier runs showed, and what changed:
+
+- **System Settings** first took Hermes 75.2 s and Grok 48.1 s. The read dropped the pane's buttons (their only
+  text is the AX description) and English labels didn't match the Chinese screen. `cu.py` now reads
+  descriptions and falls back to untranslated identifiers, so `--click General --click About` works on a Chinese
+  system; Hermes went to 37.0 s.
+- **Grok on Safari** first took 150.5 s. It had the answer from its first `cu.py` call in 14.2 s, then read
+  `cu.py`'s source to reconcile a second date in the page's references. SKILL.md 2.2.1 tells agents to trust the
+  output instead.
+- Running Claude Code over SSH fails with "Not logged in": its credentials live in the login keychain, which an
+  SSH session can't read. The bench ran it as a launchd job in the logged-in GUI session instead.
+- With Grok's `--allow Bash`, a command written as `CU="…"; $CU …` or a `web_fetch` was refused, and a refused
+  tool ends a non-interactive run; the table uses `--permission-mode bypassPermissions`, matching the other two.
 
 ## How to reproduce
 
