@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" width="1280" height="640" role="img" aria-labelledby="t d">
+  <title id="t">computer-use-fast</title>
+  <desc id="d">A Mac window being driven by one command: 108.6 seconds step by step, 27.8 seconds with computer-use-fast.</desc>
+  <style>
+    .bg{fill:#fcfcfb}.ink{fill:#0b0b0b}.ink2{fill:#52514e}.muted{fill:#8a8983}
+    .win{fill:#ffffff;stroke:#d9d8d2}.bar{fill:#e7e6e1}.accent{fill:#2a78d6}.accentS{stroke:#2a78d6}
+    .slow{fill:#b9b8b1}.code{fill:#f1f0ec}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+    text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang TC","Noto Sans TC",sans-serif}
+    @media (prefers-color-scheme: dark){
+      .bg{fill:#1a1a19}.ink{fill:#ffffff}.ink2{fill:#c3c2b7}.muted{fill:#8f8e86}
+      .win{fill:#242422;stroke:#3a3936}.bar{fill:#30302d}.accent{fill:#3987e5}.accentS{stroke:#3987e5}
+      .slow{fill:#5c5b56}.code{fill:#2b2b28}
+    }
+  </style>
+  <rect class="bg" width="1280" height="640"/>
+
+  <!-- left: title -->
+  <text class="ink" x="80" y="200" font-size="64" font-weight="700">computer-use-fast</text>
+  <text class="ink2" x="80" y="256" font-size="28">Your AI agent, fast at using a Mac.</text>
+  <text class="ink2" x="80" y="296" font-size="28">One command per task, not one turn per click.</text>
+
+  <!-- hero numbers -->
+  <text class="muted" x="80" y="404" font-size="22">System Settings → About, same agent, same Mac</text>
+  <text class="slow" x="80" y="476" font-size="56" font-weight="700">108.6 s</text>
+  <text class="muted" x="300" y="474" font-size="44">→</text>
+  <text class="accent" x="370" y="476" font-size="56" font-weight="700">27.8 s</text>
+  <rect class="bar" x="80" y="506" width="520" height="12" rx="6"/>
+  <rect class="accent" x="80" y="506" width="133" height="12" rx="6"/>
+  <text class="muted" x="80" y="560" font-size="20">macOS · Hermes · Claude Code · MIT</text>
+
+  <!-- right: a window driven by one command -->
+  <g transform="translate(700 120)">
+    <rect class="win" x="0" y="0" width="500" height="330" rx="16" stroke-width="2"/>
+    <circle cx="28" cy="26" r="7" fill="#ff5f57"/><circle cx="50" cy="26" r="7" fill="#febc2e"/><circle cx="72" cy="26" r="7" fill="#28c840"/>
+    <rect class="bar" x="20" y="56" width="130" height="254" rx="8"/>
+    <rect class="accent" x="30" y="70" width="110" height="28" rx="6" opacity="0.9"/>
+    <rect class="win" x="30" y="108" width="110" height="20" rx="5" stroke-width="0"/>
+    <rect class="win" x="30" y="136" width="110" height="20" rx="5" stroke-width="0"/>
+    <rect class="win" x="30" y="164" width="110" height="20" rx="5" stroke-width="0"/>
+    <text class="ink" x="172" y="90" font-size="20" font-weight="600">About</text>
+    <text class="ink2" x="172" y="130" font-size="17">Chip</text>
+    <text class="ink" x="300" y="130" font-size="17" font-weight="600">Apple M1</text>
+    <text class="ink2" x="172" y="162" font-size="17">Memory</text>
+    <text class="ink" x="300" y="162" font-size="17" font-weight="600">16 GB</text>
+    <rect class="accentS" x="292" y="112" width="110" height="26" rx="6" fill="none" stroke-width="2.5"/>
+    <!-- cursor -->
+    <path d="M90 80 l0 26 l7 -6 l5 11 l5 -2 l-5 -11 l9 0 z" class="ink" stroke="#ffffff" stroke-width="1.5"/>
+  </g>
+  <g transform="translate(700 476)">
+    <rect class="code" x="0" y="0" width="500" height="64" rx="12"/>
+    <text class="mono ink" x="20" y="28" font-size="15">cu.py --app "System Settings" --open</text>
+    <text class="mono ink" x="20" y="50" font-size="15">  --click General --click About --read Chip</text>
+  </g>
+</svg>

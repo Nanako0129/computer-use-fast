@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 400" width="960" height="400" role="img" aria-labelledby="t d">
+  <title id="t">End-to-end time through an agent, seconds (lower is better)</title>
+  <desc id="d">System Settings, read the chip: step by step 108.6 s, jev-computer-use 265.2 s, computer-use-fast 27.8 s. Calculator with screenshot: step by step 52 s, computer-use-fast 25.1 s. One run each on a MacBook Air M1 with Hermes and gemini-3.8-flash.</desc>
+  <style>
+    .bg{fill:#fcfcfb}.ink{fill:#0b0b0b}.ink2{fill:#52514e}.muted{fill:#8a8983}.grid{stroke:#e7e6e1}
+    .s1{fill:#b9b8b1}.s2{fill:#eb6834}.s3{fill:#2a78d6}
+    text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang TC","Noto Sans TC",sans-serif}
+    @media (prefers-color-scheme: dark){
+      .bg{fill:#1a1a19}.ink{fill:#ffffff}.ink2{fill:#c3c2b7}.muted{fill:#8f8e86}.grid{stroke:#30302d}
+      .s1{fill:#5c5b56}.s2{fill:#d95926}.s3{fill:#3987e5}
+    }
+  </style>
+  <rect class="bg" width="960" height="400" rx="12"/>
+  <text class="ink" x="32" y="44" font-size="22" font-weight="700">End-to-end time through an agent</text>
+  <text class="ink2" x="32" y="70" font-size="15">Seconds, lower is better · one run each · MacBook Air (M1), Hermes + gemini-3.8-flash</text>
+
+  <!-- legend -->
+  <g font-size="14">
+    <rect class="s1" x="32" y="90" width="14" height="14" rx="3"/><text class="ink2" x="52" y="102">Step by step, no skill</text>
+    <rect class="s2" x="220" y="90" width="14" height="14" rx="3"/><text class="ink2" x="240" y="102">jev-computer-use</text>
+    <rect class="s3" x="380" y="90" width="14" height="14" rx="3"/><text class="ink2" x="400" y="102">computer-use-fast</text>
+  </g>
+
+  <!-- scale: 0..270 s over x 250..900 (650 px) => 2.407 px/s -->
+  <g class="grid" stroke-width="1">
+    <line x1="250" y1="124" x2="250" y2="356"/><line x1="370.4" y1="124" x2="370.4" y2="356"/>
+    <line x1="490.7" y1="124" x2="490.7" y2="356"/><line x1="611.1" y1="124" x2="611.1" y2="356"/>
+    <line x1="731.5" y1="124" x2="731.5" y2="356"/><line x1="851.9" y1="124" x2="851.9" y2="356"/>
+  </g>
+  <g class="muted" font-size="12" text-anchor="middle">
+    <text x="250" y="376">0</text><text x="370.4" y="376">50</text><text x="490.7" y="376">100</text>
+    <text x="611.1" y="376">150</text><text x="731.5" y="376">200</text><text x="851.9" y="376">250 s</text>
+  </g>
+
+  <!-- task 1 -->
+  <text class="ink" x="32" y="160" font-size="15" font-weight="600">System Settings</text>
+  <text class="ink2" x="32" y="180" font-size="13">→ About, read the chip</text>
+  <rect class="s1" x="250" y="138" width="261.4" height="22" rx="4"/><text class="ink" x="519" y="154" font-size="13">108.6 s</text>
+  <rect class="s2" x="250" y="162" width="638.4" height="22" rx="4"/><text class="ink" x="796" y="178" font-size="13" text-anchor="end">265.2 s</text>
+  <rect class="s3" x="250" y="186" width="66.9" height="22" rx="4"/><text class="ink" x="325" y="202" font-size="13" font-weight="700">27.8 s</text>
+
+  <!-- task 2 -->
+  <text class="ink" x="32" y="268" font-size="15" font-weight="600">Calculator</text>
+  <text class="ink2" x="32" y="288" font-size="13">56 × 123, read, screenshot</text>
+  <rect class="s1" x="250" y="258" width="125.2" height="22" rx="4"/><text class="ink" x="383" y="274" font-size="13">52.0 s</text>
+  <rect class="s3" x="250" y="282" width="60.4" height="22" rx="4"/><text class="ink" x="318" y="298" font-size="13" font-weight="700">25.1 s</text>
+  <text class="muted" x="250" y="330" font-size="12">jev-computer-use not measured on this task</text>
+</svg>

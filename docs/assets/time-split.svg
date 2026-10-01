@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 230" width="960" height="230" role="img" aria-labelledby="t d">
+  <title id="t">Where 108.6 seconds went, step by step</title>
+  <desc id="d">Of 108.6 seconds for "System Settings, About, what chip", the agent's six thinking turns took about 97 seconds, the clicks and screenshots 4.6 seconds, and the rest about 7 seconds.</desc>
+  <style>
+    .bg{fill:#fcfcfb}.ink{fill:#0b0b0b}.ink2{fill:#52514e}.muted{fill:#8a8983}
+    .think{fill:#b9b8b1}.tool{fill:#2a78d6}.rest{fill:#e7e6e1}
+    text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang TC","Noto Sans TC",sans-serif}
+    @media (prefers-color-scheme: dark){
+      .bg{fill:#1a1a19}.ink{fill:#ffffff}.ink2{fill:#c3c2b7}.muted{fill:#8f8e86}
+      .think{fill:#5c5b56}.tool{fill:#3987e5}.rest{fill:#30302d}
+    }
+  </style>
+  <rect class="bg" width="960" height="230" rx="12"/>
+  <text class="ink" x="32" y="44" font-size="22" font-weight="700">Where the time goes when an agent clicks step by step</text>
+  <text class="ink2" x="32" y="70" font-size="15">"System Settings → About, what chip?" · 108.6 s in total · Hermes log, one run</text>
+  <!-- 896 px for 108.6 s => 8.25 px/s ; think 97 => 800 ; tool 4.6 => 38 ; rest 7 => 58 (2px gaps) -->
+  <rect class="think" x="32" y="96" width="798" height="40" rx="4"/>
+  <rect class="tool" x="832" y="96" width="38" height="40" rx="4"/>
+  <rect class="rest" x="872" y="96" width="56" height="40" rx="4"/>
+  <text class="ink" x="48" y="122" font-size="16" font-weight="600">Agent thinking between steps · ~97 s (90%)</text>
+  <line x1="851" y1="140" x2="851" y2="160" stroke="#8a8983"/>
+  <text class="ink" x="851" y="178" font-size="14" text-anchor="middle" font-weight="600">Clicks &amp; screenshots 4.6 s</text>
+  <text class="muted" x="928" y="196" font-size="12" text-anchor="end">other ~7 s</text>
+  <text class="ink2" x="32" y="212" font-size="14">So the fix is fewer turns, not faster clicks: cu.py runs the whole sequence in one turn.</text>
+</svg>

@@ -76,7 +76,7 @@ What it handles for you, so you don't spend turns on it:
 - **Web pages.** Safari exposes the whole page; links, buttons and inputs match by their text. Web inputs are
   filled by typing, because pages ignore direct value writes.
 - **Chrome, Edge, Brave, Arc and Electron apps** (Discord, VS Code …) show only their menus until asked;
-  `cu.py` asks through `cu-axenable` (see the repository README). Without it you will see a `note` line and
+  `cu.py` asks through `cu-axenable` (setup: docs/setup.md, step 4, in the repository). Without it you will see a `note` line and
   only menus: use Safari for web pages, or Tier 3.
 - **Clicking what is already selected** reports `(no visible change)` and carries on; assert outcomes with
   `--wait-for` or `--read`, not with the click.

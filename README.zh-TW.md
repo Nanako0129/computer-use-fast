@@ -1,164 +1,62 @@
+![computer-use-fast](docs/assets/cover.svg)
+
 # computer-use-fast
 
-> 讓 agent 在 Mac 上操作 GUI 時，只用一兩個回合就做完，不用來回十幾趟。能用 shell 指令回答的就不開視窗；
-> 要開的話，用一次 `cu.py` 呼叫把開 App、依文字點按鈕、打字、讀畫面、截圖全部做完。
+> 讓你的 AI agent 用 Mac 用得快。請它開 App、一路點下去、打字、讀畫面或傳截圖，大約 25 秒就完成，
+> 不用再等 50 到 100 秒。
 
 [English](./README.md)
 
-## 為什麼需要它
+## 亮點
 
-agent 一步一步操作 Mac 時，時間幾乎都不是花在點擊上。在 MacBook Air（M1）上請它「打開系統設定 → 一般 →
-關於，告訴我晶片型號」，總共 108 秒：工具只跑了 4.6 秒，中間的模型回合花了大約 97 秒。每截一次圖、每點一下、
-每想一次「接下來呢」，都是一個回合。
+- **GUI 任務快 2 到 4 倍，都是實測。** 同一個 agent、同一台 Mac：系統設定 → 關於從 108.6 秒降到 27.8 秒，
+  計算機加截圖從 52 秒降到 25.1 秒。[所有測量 →](docs/zh-TW/benchmarks.md)
+- **一個任務一道指令，不是每點一下就一個回合。** 一步一步操作時，大約 90% 的時間是 agent 在兩次點擊之間
+  思考。`cu.py` 用一次呼叫就把開 App、依畫面文字點按鈕、打字、選選單、填欄位、等待、讀畫面、截圖全做完，
+  這些回合就省掉了。
+- **大多數 App 都能用。** 在一台 Mac 上測了 74 個 App，58 個可以用，包含 Safari、Chrome、Discord、VS Code、
+  Word、Excel、Keynote、郵件、備忘錄、Finder、系統設定。不能用的 App 會講清楚原因。
+- **不挑系統語言，不需要 API key。** 中文 App 名稱和按鈕文字都能用（計算機、一般），全部在你的 Mac 上執行。
+- **支援 Hermes、Claude Code，以及任何會讀 `SKILL.md` 的 agent。** Hermes 一行指令就能安裝和更新。
 
-`cu.py` 在本機一次跑完整串動作，用輔助使用（AX）的文字找按鈕，agent 只要花一個回合，不用六個。
+![透過 agent 從頭到尾的時間](docs/assets/speed.svg)
 
-| 任務（透過 agent 從頭跑到尾；Hermes、`gemini-3.8-flash`） | 一步一步 | 用這個 skill |
-|---|---|---|
-| 系統設定 → 一般 → 關於，讀晶片型號、截圖 | 108 秒 | 28 秒 |
-| 計算機：輸入 `56*123=`、讀結果、截圖 | 52 秒 | 25 秒 |
-
-每題只跑一次、只在一台機器上量，實際數字會隨你用的模型延遲而不同。
-
-### 跟 Jev 版的比較
-
-[jev-computer-use](https://github.com/kerpopule/hermes-jev-skills) 從另一端加速同一個問題：用一個小模型
-（TypeSafe Jev）約 0.3 秒選出下一個動作，取代 agent 的主模型。在同一台機器、同一個 agent、同一題（系統設定 →
-一般 → 關於，「晶片型號？」）上實測：
-
-| | 時間 | 工具呼叫 |
-|---|---|---|
-| 一步一步、不用 skill | 108.6 秒 | 5 次 |
-| jev-computer-use | 265.2 秒 | 13 次 |
-| jev-computer-use，補上 `--plan` 用的 key | 94.4 秒 | —（runner 失敗兩次，最後由 agent 手動做完） |
-| **這個 skill** | **27.8 秒** | 2 次 |
-
-Jev 的選擇又快又準（選對元素的信心 0.98–0.99），時間花在它周圍的回合：agent 還是要寫每一道指令、讀每個結果，
-runner 停下來時還要重試。`cu.py` 是一次呼叫把這些回合直接拿掉。它也不需要 API key。每種只跑一次，你的數字會不同。
-
-## 需要什麼
-
-| | |
-|---|---|
-| macOS | 在 macOS 27（Apple Silicon）上測過 |
-| Python | 3.9 以上，不用裝任何套件 |
-| [cua-driver](https://github.com/trycua/cua) | `CuaDriver.app` 放在 `/Applications`，並已授權「輔助使用」與「螢幕錄製」（`cua-driver permissions grant`） |
-
-`cu.py` 會自己啟動 `cua-driver mcp`。driver 不在預設位置的話，用 `CUA_DRIVER_BIN` 指定路徑。
-
-## 安裝
-
-### Hermes Agent
+## 快速開始
 
 ```bash
+# 1. 負責點擊的 driver，以及它需要的兩項 macOS 權限
+/bin/bash -c "$(curl -fsSL https://cua.ai/driver/install.sh)"
+cua-driver permissions grant
+
+# 2. 安裝 skill（Hermes）
 hermes skills install Nanako0129/computer-use-fast/skills/computer-use-fast
 ```
 
-裝好之後 Hermes 會持續追蹤：有新版時 `hermes skills check` 會提示，`hermes skills update` 就會更新。
-想指定放在哪個分類資料夾，加上 `--category <資料夾>`。
+Claude Code 和其他 agent、Chrome 與 Electron App、確認安裝成功、更新：
+**[docs/zh-TW/setup.md](docs/zh-TW/setup.md)**
 
-### Claude Code
+## 怎麼用
 
-```bash
-git clone https://github.com/Nanako0129/computer-use-fast ~/src/computer-use-fast
-mkdir -p ~/.claude/skills
-cp -R ~/src/computer-use-fast/skills/computer-use-fast ~/.claude/skills/
-```
+照平常的方式跟 agent 說就好：
 
-之後要更新：`git -C ~/src/computer-use-fast pull`，再執行一次 `cp -R` 那一行。
+> 打開系統設定，告訴我這台 Mac 是什麼晶片。
+> 打開計算機，算 56 × 123，截圖給我。
+> 用 Safari 在維基百科搜尋「hieroglyphs」，告訴我寫了什麼。
 
-### 其他會讀 `SKILL.md` 的 agent
-
-把 `skills/computer-use-fast/` 複製到那個 agent 的 skills 資料夾。skill 會用 `SKILL.md` 旁邊的
-`scripts/cu.py`，兩者要放在一起。
-
-### 確認裝好了
-
-把 `<skill>` 換成你安裝的資料夾（例如 `~/.claude/skills/computer-use-fast`）。
-
-```bash
-python3 <skill>/scripts/test_cu.py     # 不需要 driver，印出 "ok"
-python3 <skill>/scripts/cu.py --app Calculator --open --type "1+1=" --read
-```
-
-第二行應該會打開計算機，印出一行含有 `2` 的結果。
-
-### Chrome、Edge、Brave、Arc 與 Electron App（選用）
-
-Chromium 系的瀏覽器和 Electron App（Discord、VS Code……）預設只把選單列提供給輔助使用程式，要有程式「要求」，
-它們才會建出其餘的內容。`cu.py` 透過一支約 20 行的小工具來要求，而 macOS 規定這支工具要你授權一次才能執行：
-
-```bash
-mkdir -p ~/.local/share/computer-use-fast
-swiftc -O <skill>/scripts/axenable.swift -o ~/.local/share/computer-use-fast/cu-axenable
-~/.local/share/computer-use-fast/cu-axenable 1   # 第一次會印出 "not trusted: …"
-```
-
-接著打開 **系統設定 → 隱私權與安全性 → 輔助使用**，按 **＋**，按 **⌘⇧G** 貼上
-`~/.local/share/computer-use-fast/cu-axenable`，確認它的開關是打開的。這個檔案刻意放在 skill 資料夾外面：
-更新 skill 時不能把你授權過的檔案換掉。重新編譯就會換掉，所以重新編譯後要再授權一次。沒有這支工具時，
-`cu.py` 會印出一行 `note`，網頁請改用 Safari。
-
-## 直接使用 `cu.py`
+agent 在背後只會跑一行，例如：
 
 ```bash
 cu.py --app "System Settings" --open --click 一般 --click 關於本機 --read 晶片
-cu.py --app 計算機 --open --type "56*123=" --read --shot
-cu.py --app Safari --url https://en.wikipedia.org/wiki/Rosetta_Stone --wait-for "Rosetta Stone" --click "Ptolemy V Epiphanes" --read Born
-cu.py --app Safari --fill "Search Wikipedia=Hieroglyphs" --key return --wait-for "Egyptian hieroglyphs"
-cu.py --app 文字編輯 --open --menu "檔案 > 新增" --type "你好" --read 你好
-cu.py --app Finder --click 應用程式 --wait-for 計算機 --read 計算機
 ```
 
-| 步驟 | 作用 |
+## 文件
+
+| | |
 |---|---|
-| `--app 名稱` | 英文名、在地化名稱（例如 計算機）或 bundle id |
-| `--open` | 需要時開啟 App，並等它的視窗出現 |
-| `--window 標題` | 操作標題含有該文字的視窗（預設：最前面、有內容的視窗） |
-| `--url URL` | 用 `--app` 指定的瀏覽器打開網址 |
-| `--click 文字` | 點擊顯示文字相符的元素（完全相符 → 開頭相符 → 包含）；`--double`、`--right` 同理 |
-| `--fill 標籤=文字` | 依標籤、提示文字或預設文字找到輸入框並填入；找不到時用工具列上唯一的輸入框 |
-| `--type 文字` | 在目前焦點的欄位打字 |
-| `--key 鍵` | `return`、`escape`、`tab`，或 `cmd+n` 這類組合鍵 |
-| `--menu "A > B"` | 依路徑觸發選單列項目 |
-| `--scroll 方向[:N]` | `up`／`down`／`left`／`right`，捲 N 格（預設 5） |
-| `--wait-for 文字` | 最多等 15 秒，直到該文字出現在畫面上 |
-| `--wait 秒數` | 單純暫停 |
-| `--read [篩選]` | 印出畫面上的文字；加篩選時，回傳符合的那行和下一行（`晶片 \| Apple M1`） |
-| `--shot` | 把視窗存成 PNG 並印出路徑（`CU_SHOT_DIR`；沒設定時，有 `~/.hermes` 就存到 `~/.hermes/cache/images`，否則存到暫存資料夾） |
-
-執行過程中它還會：動作開出新視窗時自動切過去；`--click` 在目前視窗找不到目標時，到同一個 App 的其他視窗
-（對話框、sheet）裡找；側邊欄這類不吃「按下」的列，改用真正的滑鼠點擊；網頁輸入框用打字填入，因為網頁不吃
-直接寫入的值。
-
-按鈕文字跟著系統語言：繁體中文系統要寫 `--click 一般`，不是 `--click General`。
-
-結束代碼：`0` 成功 · `2` driver 錯誤 · `3` 找不到目標（會列出候選）· `4` `--wait-for` 逾時。點到本來就選取
-的項目會印出 `(no visible change)` 並繼續。
-
-## 實測過的 App
-
-在一台 MacBook Air（macOS 27、繁體中文）上，把每個 App 都用 `--open --read` 開啟並讀取一次（2026-10-01）：
-**75 個裡有 57 個讀取正常**，包含 Safari、Chrome（搭配 `cu-axenable`）、Discord、VS Code、Claude、
-Microsoft Word／Excel／PowerPoint、Keynote、郵件、備忘錄、聯絡人、行事曆、Finder、系統設定、Automator、
-預覽程式、音樂。另有 7 個刻意跳過（VPN、虛擬機、一開就會打開相機的 App）。其餘的：
-
-| 類型 | App | `cu.py` 的回應 |
-|---|---|---|
-| 選單列或背景程式 | Amphetamine、Maccy、ZeroTier、LogiPluginService…… | 「runs only as a menu-bar or background agent」 |
-| 在執行但視窗全關了 | Spotify、Telegram、無邊記、便條紙 | 「running but has no window」 |
-| Flutter，沒有 AX 文字 | RustDesk、Cloudflare WARP | 改用一步一步的 computer use |
-| 本來就不是視窗 App | 指揮中心、時光機、App | — |
-
-## 限制
-
-- 沒有 AX 文字的 App（RustDesk 這類 Flutter App、遊戲、畫布）沒辦法用文字比對。skill 會叫 agent 改用它自己的
-  computer use 工具。
-- 樹太大時只讀淺層：完整走訪超過 driver 的 20 秒上限時（媒體庫很大的「音樂」），`cu.py` 會改用深度 10 重試，
-  側邊欄和工具列還讀得到。
-- 管理員權限的對話框（解鎖按鈕、輸入密碼）要由人處理：skill 會叫 agent 停下來，說清楚哪個按鈕需要你。
-  `cu.py` 本身不處理密碼。
-- 只支援 macOS。
+| [安裝](docs/zh-TW/setup.md) | 安裝、權限、Chrome／Electron 小工具、讓 agent 優先使用、更新、移除 |
+| [指令參考](docs/zh-TW/reference.md) | 每個步驟、比對方式、輸出、結束代碼、環境變數 |
+| [實測數據](docs/zh-TW/benchmarks.md) | 所有測量：從頭到尾、單一指令、每項修正的前後、與 Jev 的比較、App 相容性 |
+| [疑難排解](docs/zh-TW/troubleshooting.md) | `cu.py` 會印出的每種訊息，以及該怎麼處理 |
 
 ## 授權
 

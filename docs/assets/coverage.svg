@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 300" width="960" height="300" role="img" aria-labelledby="t d">
+  <title id="t">74 installed apps, each opened and read once</title>
+  <desc id="d">58 worked. The other 16 have nothing cu.py can drive: 7 menu-bar or background agents, 4 running with every window closed, 3 not windowed apps, 1 Flutter app without readable text, 1 that did not open. 7 more were skipped on purpose.</desc>
+  <style>
+    .bg{fill:#fcfcfb}.ink{fill:#0b0b0b}.ink2{fill:#52514e}.muted{fill:#8a8983}
+    .ok{fill:#2a78d6}.c1{fill:#b9b8b1}.c2{fill:#cfcec8}.c3{fill:#dedcd6}.c4{fill:#e9e8e3}
+    text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang TC","Noto Sans TC",sans-serif}
+    @media (prefers-color-scheme: dark){
+      .bg{fill:#1a1a19}.ink{fill:#ffffff}.ink2{fill:#c3c2b7}.muted{fill:#8f8e86}
+      .ok{fill:#3987e5}.c1{fill:#6b6a64}.c2{fill:#57564f}.c3{fill:#46453f}.c4{fill:#383733}
+    }
+  </style>
+  <rect class="bg" width="960" height="300" rx="12"/>
+  <text class="ink" x="32" y="44" font-size="22" font-weight="700">58 of 74 apps worked</text>
+  <text class="ink2" x="32" y="70" font-size="15">Every app on one MacBook Air (macOS 27), opened and read once · 7 more skipped on purpose (VPN, VMs, camera)</text>
+  <!-- 896 px / 74 apps = 12.11 px each, 2 px gaps -->
+  <rect class="ok" x="32" y="96" width="700" height="44" rx="4"/>
+  <rect class="c1" x="734" y="96" width="83" height="44" rx="4"/>
+  <rect class="c2" x="819" y="96" width="46" height="44" rx="4"/>
+  <rect class="c3" x="867" y="96" width="34" height="44" rx="4"/>
+  <rect class="c4" x="903" y="96" width="10" height="44" rx="3"/>
+  <rect class="c4" x="915" y="96" width="10" height="44" rx="3"/>
+  <text x="48" y="124" font-size="17" font-weight="700" fill="#ffffff">58 work</text>
+
+  <g font-size="14">
+    <rect class="ok" x="32" y="168" width="14" height="14" rx="3"/>
+    <text class="ink" x="54" y="180">58 · read and drive: Safari, Chrome, Discord, VS Code, Word, Excel, Keynote, Mail, Notes, Finder, System Settings …</text>
+    <rect class="c1" x="32" y="194" width="14" height="14" rx="3"/>
+    <text class="ink" x="54" y="206">7 · live only in the menu bar or background (Amphetamine, Maccy, ZeroTier …)</text>
+    <rect class="c2" x="32" y="220" width="14" height="14" rx="3"/>
+    <text class="ink" x="54" y="232">4 · running with every window closed (Spotify, Telegram, Freeform, Stickies)</text>
+    <rect class="c3" x="32" y="246" width="14" height="14" rx="3"/>
+    <text class="ink" x="54" y="258">3 · not windowed apps (Mission Control, Time Machine, Apps)</text>
+    <rect class="c4" x="32" y="272" width="14" height="14" rx="3"/>
+    <text class="ink" x="54" y="284">2 · RustDesk (Flutter, no readable text) and News (did not open)</text>
+  </g>
+</svg>
