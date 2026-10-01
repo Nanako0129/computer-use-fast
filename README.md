@@ -16,14 +16,13 @@
   fills fields, waits, reads the screen and saves a screenshot in a single call, so those turns disappear.
 - **Runs in the background.** It acts through macOS accessibility, not the mouse: clicking, typing, filling
   fields, reading and even opening apps and pages left the app you were using in front and the pointer where it
-  was, sampled every 50 ms by a tool independent of the driver. Menu commands that open a new window are the
-  exception. The driver runs natively on your Mac, not in a container or VM. [Measured →](docs/benchmarks.md#5-does-it-take-over-the-screen)
+  was, sampled every 50 ms by a tool independent of the driver. Dragging, and menu commands that open a new
+  window, are the exceptions. The driver runs natively on your Mac, not in a container or VM. [Measured →](docs/benchmarks.md#5-does-it-take-over-the-screen)
 - **Works on most apps.** 58 of the 74 apps tested on one Mac, including Safari, Chrome, Discord, VS Code,
   Word, Excel, Keynote, Mail, Notes, Finder and System Settings. Apps with nothing to drive get a clear reason.
 - **Any system language, no API key.** Localized app and button names work (計算機, 一般). It all runs on
   your Mac.
-- **For Hermes, Claude Code, or any agent that reads `SKILL.md`.** Hermes installs and updates it with one
-  command.
+- **For Hermes, Claude Code, or any agent that reads `SKILL.md`.** One command installs it, and one updates it.
 
 ![End-to-end time through an agent](docs/assets/speed.svg)
 
@@ -34,11 +33,13 @@
 /bin/bash -c "$(curl -fsSL https://cua.ai/driver/install.sh)"
 cua-driver permissions grant
 
-# 2. The skill (Hermes)
+# 2. The skill: Hermes
 hermes skills install Nanako0129/computer-use-fast/skills/computer-use-fast
+#    or Claude Code
+npx skills add Nanako0129/computer-use-fast -g -a claude-code --skill computer-use-fast -y
 ```
 
-Claude Code and other agents, Chrome and Electron apps, checking that it works, updating:
+Other agents, Chrome and Electron apps, checking that it works, updating:
 **[docs/setup.md](docs/setup.md)**
 
 ## Using it

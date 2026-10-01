@@ -121,8 +121,10 @@ back. The app named first was in front at the start.
 | TextEdit, not running: `--open --read` | Finder | none | never moved |
 | TextEdit, open: `--read` (×2) | Finder | none | never moved |
 | **TextEdit: `--menu "File > New"`** (×3) | Finder | **TextEdit came to the front after ~1.1 s and stayed** | never moved |
+| **Finder: `--drag "file > folder"`** (the file moved into the folder) | Safari | **Finder in front for ~1.0 s, then Safari again** | **moved to the drop point and stayed** |
 
-The one that takes focus is a menu command that opens a new window: macOS brings an app forward when it opens a
+Two things take over. Dragging: cua-driver refuses background drags on macOS, so a drag fronts the window and
+moves the real pointer. And a menu command that opens a new window: macOS brings an app forward when it opens a
 document window. Typing into an app with several windows uses a brief foreground delivery; that run could not be
 measured cleanly (the previous step had left TextEdit in front) and is not claimed either way.
 

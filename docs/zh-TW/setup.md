@@ -38,9 +38,19 @@ hermes skills install Nanako0129/computer-use-fast/skills/computer-use-fast
 ### Claude Code
 
 ```bash
-git clone https://github.com/Nanako0129/computer-use-fast ~/src/computer-use-fast
-mkdir -p ~/.claude/skills
-cp -R ~/src/computer-use-fast/skills/computer-use-fast ~/.claude/skills/
+npx skills add Nanako0129/computer-use-fast -g -a claude-code --skill computer-use-fast -y
+```
+
+這是用 [skills](https://www.npmjs.com/package/skills) 這個 CLI（需要 Node.js），會把 skill 放到
+`~/.claude/skills/computer-use-fast`。沒有 Node 的話，就 clone 這個 repo，把 `skills/computer-use-fast/`
+複製到 `~/.claude/skills/`。
+
+### Grok CLI
+
+Grok 從 `~/.grok/skills/` 讀取 skill。先照上面的方式裝給 Claude Code，再建一個連結：
+
+```bash
+mkdir -p ~/.grok/skills && ln -s ~/.claude/skills/computer-use-fast ~/.grok/skills/
 ```
 
 ### 其他 agent
@@ -104,8 +114,7 @@ Never use osascript or System Events to control apps.
 
 | | Hermes | Claude Code |
 |---|---|---|
-| 有沒有新版？ | `hermes skills check` | `git -C ~/src/computer-use-fast fetch && git -C ~/src/computer-use-fast status` |
-| 更新 | `hermes skills update computer-use-fast` | `git -C ~/src/computer-use-fast pull`，再執行一次 `cp -R` |
+| 更新 | `hermes skills update computer-use-fast`（`hermes skills check` 可看有沒有新版） | `npx skills update computer-use-fast -g -y` |
 | 移除 | `hermes skills uninstall computer-use-fast` | `rm -rf ~/.claude/skills/computer-use-fast` |
 
 如果編譯過 Chrome 小工具：`rm -rf ~/.local/share/computer-use-fast`，再從輔助使用清單裡移除 `cu-axenable`。

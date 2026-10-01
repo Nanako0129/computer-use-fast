@@ -47,4 +47,6 @@ assert cu.best_match(ELS, "About")["element_index"] == 3             # text insi
 assert cu.best_match(ELS, "search", cu.FIELD_ROLES, None)["element_index"] == 6
 assert cu.best_match(ELS, "missing") is None
 
+assert cu.parse(["--drag", "a.txt > Folder", "--read-all"]) == [("--drag", "a.txt > Folder"), ("--read-all", None)]
+
 print("ok")

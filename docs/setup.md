@@ -39,9 +39,19 @@ The last lines tell you where it went (`Installed: …`); it lives under `~/.her
 ### Claude Code
 
 ```bash
-git clone https://github.com/Nanako0129/computer-use-fast ~/src/computer-use-fast
-mkdir -p ~/.claude/skills
-cp -R ~/src/computer-use-fast/skills/computer-use-fast ~/.claude/skills/
+npx skills add Nanako0129/computer-use-fast -g -a claude-code --skill computer-use-fast -y
+```
+
+This uses the [skills](https://www.npmjs.com/package/skills) CLI (needs Node.js) and puts the skill in
+`~/.claude/skills/computer-use-fast`. Without Node, clone the repository and copy
+`skills/computer-use-fast/` into `~/.claude/skills/` instead.
+
+### Grok CLI
+
+Grok reads skills from `~/.grok/skills/`. Install for Claude Code as above, then link it:
+
+```bash
+mkdir -p ~/.grok/skills && ln -s ~/.claude/skills/computer-use-fast ~/.grok/skills/
 ```
 
 ### Other agents
@@ -107,8 +117,7 @@ out after 120 s in another.
 
 | | Hermes | Claude Code |
 |---|---|---|
-| Is there a new version? | `hermes skills check` | `git -C ~/src/computer-use-fast fetch && git -C ~/src/computer-use-fast status` |
-| Update | `hermes skills update computer-use-fast` | `git -C ~/src/computer-use-fast pull`, then repeat the `cp -R` |
+| Update | `hermes skills update computer-use-fast` (`hermes skills check` shows whether one is due) | `npx skills update computer-use-fast -g -y` |
 | Uninstall | `hermes skills uninstall computer-use-fast` | `rm -rf ~/.claude/skills/computer-use-fast` |
 
 The Chrome helper, if you built it: `rm -rf ~/.local/share/computer-use-fast`, then remove `cu-axenable` from

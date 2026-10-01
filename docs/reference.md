@@ -17,6 +17,7 @@ Steps run in the order given, inside one process. It stops at the first step tha
 | `--click TEXT` | Click the element whose visible text matches | `--click "About"` |
 | `--double TEXT` | Double-click it | `--double "report.pdf"` |
 | `--right TEXT` | Right-click it | `--right "report.pdf"` |
+| `--drag "A > B"` | Drag the element showing A onto the one showing B (moves the real pointer, see below) | `--drag "notes.txt > Archive"` |
 | `--fill LABEL=TEXT` | Put TEXT in the field labelled LABEL (label, tooltip or placeholder) | `--fill "Search=groceries"` |
 | `--type TEXT` | Type into whatever has focus | `--type "56*123="` |
 | `--key KEY` | Press a key or a shortcut | `--key return`, `--key cmd+n` |
@@ -24,7 +25,8 @@ Steps run in the order given, inside one process. It stops at the first step tha
 | `--scroll DIR[:N]` | Scroll `up`, `down`, `left` or `right`, N steps (default 5) | `--scroll down:10` |
 | `--wait-for TEXT` | Wait up to 15 s until TEXT is on screen | `--wait-for "Results"` |
 | `--wait SEC` | Wait a fixed time | `--wait 2` |
-| `--read [FILTER]` | Print the visible text; with FILTER, only matching lines | `--read`, `--read Chip` |
+| `--read [FILTER]` | Print the visible text, at most 150 lines; with FILTER, only matching lines | `--read`, `--read Chip` |
+| `--read-all` | Print every visible line, however many | `--read-all` |
 | `--shot` | Save the window as PNG and print the path | `--shot` |
 
 ### How `--click` finds its target
@@ -66,6 +68,7 @@ pointer untouched. A few cases need the target window in front for a moment:
 | `--open` for an app whose first window only appears when it is activated (TextEdit) | The app comes to the front |
 | `--click` on a row that needs a real mouse click (Finder's sidebar), when a background click is refused | The window comes forward for the click, then your app is put back in front |
 | `--type` / `--key` while the app has several windows | The same brief switch, so the keys reach the right window |
+| `--drag` | macOS has no background drag: the window comes forward for about a second and **the real pointer moves** to the drop point and stays there |
 
 The measurements are in [benchmarks.md](benchmarks.md#5-does-it-take-over-the-screen). Check your own with
 `python3 scripts/watch_focus.py -- python3 scripts/cu.py …`, which samples the front app and pointer every 50 ms

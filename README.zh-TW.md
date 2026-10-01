@@ -16,11 +16,11 @@
   這些回合就省掉了。
 - **在背景操作，不搶你的畫面。** 透過 macOS 的輔助使用 API 操作，而不是移動滑鼠：點擊、打字、填欄位、
   讀畫面，連開 App 和開網頁，都不會把你正在用的 App 擠到後面，滑鼠也留在原地（用一支不經過 driver 的工具每 50
-  毫秒取樣確認）。例外是會開出新視窗的選單。driver 直接跑在你的 Mac 上，不是容器或虛擬機。[實測 →](docs/zh-TW/benchmarks.md)
+  毫秒取樣確認）。例外是拖曳，以及會開出新視窗的選單。driver 直接跑在你的 Mac 上，不是容器或虛擬機。[實測 →](docs/zh-TW/benchmarks.md)
 - **大多數 App 都能用。** 在一台 Mac 上測了 74 個 App，58 個可以用，包含 Safari、Chrome、Discord、VS Code、
   Word、Excel、Keynote、郵件、備忘錄、Finder、系統設定。不能用的 App 會講清楚原因。
 - **不挑系統語言，不需要 API key。** 中文 App 名稱和按鈕文字都能用（計算機、一般），全部在你的 Mac 上執行。
-- **支援 Hermes、Claude Code，以及任何會讀 `SKILL.md` 的 agent。** Hermes 一行指令就能安裝和更新。
+- **支援 Hermes、Claude Code，以及任何會讀 `SKILL.md` 的 agent。** 一行指令安裝，一行指令更新。
 
 ![透過 agent 從頭到尾的時間](docs/assets/speed.svg)
 
@@ -31,11 +31,13 @@
 /bin/bash -c "$(curl -fsSL https://cua.ai/driver/install.sh)"
 cua-driver permissions grant
 
-# 2. 安裝 skill（Hermes）
+# 2. 安裝 skill：Hermes
 hermes skills install Nanako0129/computer-use-fast/skills/computer-use-fast
+#    或 Claude Code
+npx skills add Nanako0129/computer-use-fast -g -a claude-code --skill computer-use-fast -y
 ```
 
-Claude Code 和其他 agent、Chrome 與 Electron App、確認安裝成功、更新：
+其他 agent、Chrome 與 Electron App、確認安裝成功、更新：
 **[docs/zh-TW/setup.md](docs/zh-TW/setup.md)**
 
 ## 怎麼用

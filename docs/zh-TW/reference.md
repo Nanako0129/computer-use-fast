@@ -17,6 +17,7 @@ python3 <skill>/scripts/cu.py 步驟 [步驟 …]
 | `--click 文字` | 點擊顯示文字相符的元素 | `--click "關於本機"` |
 | `--double 文字` | 雙擊 | `--double "report.pdf"` |
 | `--right 文字` | 按右鍵 | `--right "report.pdf"` |
+| `--drag "A > B"` | 把顯示 A 的元素拖到顯示 B 的元素上（會移動真正的滑鼠，見下方） | `--drag "notes.txt > 封存"` |
 | `--fill 標籤=文字` | 在標籤為「標籤」的欄位填入文字（依標籤、提示或預設文字） | `--fill "搜尋=採買"` |
 | `--type 文字` | 在目前焦點的地方打字 | `--type "56*123="` |
 | `--key 鍵` | 按鍵或快捷鍵 | `--key return`、`--key cmd+n` |
@@ -24,7 +25,8 @@ python3 <skill>/scripts/cu.py 步驟 [步驟 …]
 | `--scroll 方向[:N]` | 往 `up`、`down`、`left`、`right` 捲 N 格（預設 5） | `--scroll down:10` |
 | `--wait-for 文字` | 最多等 15 秒，直到該文字出現在畫面上 | `--wait-for "搜尋結果"` |
 | `--wait 秒數` | 固定等待 | `--wait 2` |
-| `--read [篩選]` | 印出畫面上的文字；加篩選時只印符合的 | `--read`、`--read 晶片` |
+| `--read [篩選]` | 印出畫面上的文字，最多 150 行；加篩選時只印符合的 | `--read`、`--read 晶片` |
+| `--read-all` | 不限行數，全部印出 | `--read-all` |
 | `--shot` | 把視窗存成 PNG 並印出路徑 | `--shot` |
 
 ### `--click` 怎麼找目標
@@ -65,6 +67,7 @@ python3 <skill>/scripts/cu.py 步驟 [步驟 …]
 | 對「要被帶到前景才會出現第一個視窗」的 App 用 `--open`（文字編輯） | 該 App 會跳到前面 |
 | 對需要真正滑鼠點擊的列（Finder 側邊欄）用 `--click`，而背景點擊被拒絕時 | 視窗短暫到前面讓它點，點完再把你的 App 放回前面 |
 | App 開了好幾個視窗時的 `--type`／`--key` | 同樣短暫切換一下，確保按鍵送進正確的視窗 |
+| `--drag` | macOS 沒辦法在背景拖曳：視窗會到前面約 1 秒，而且**真正的滑鼠會移到放下的位置**並停在那裡 |
 
 實測數據在 [benchmarks.md](benchmarks.md)。想自己驗證，可以用 `python3 scripts/watch_focus.py -- python3 scripts/cu.py …`，
 它不經過 cua-driver，每 50 毫秒取樣一次前景 App 和滑鼠位置。

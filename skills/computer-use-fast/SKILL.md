@@ -1,7 +1,7 @@
 ---
 name: computer-use-fast
 description: Do GUI tasks on a Mac in as few agent turns as possible. Try a shell command first, then run the whole click/type/read sequence in ONE terminal call with scripts/cu.py, and fall back to step-by-step computer use only for apps with no accessibility text. Load before any desktop or app task on macOS.
-version: 2.1.0
+version: 2.2.0
 author: Nanako Tsai
 license: MIT
 platforms: [macos]
@@ -63,7 +63,9 @@ Steps run in the order given:
 | `--scroll DIR[:N]` | `up`, `down`, `left`, `right`, N notches (default 5) |
 | `--wait-for TEXT` | wait up to 15 s until TEXT is on screen (page loads, dialogs) |
 | `--wait SEC` | plain pause |
-| `--read [FILTER]` | print visible text; with a filter, each match **and the line after it** (label → value, e.g. `Chip | Apple M1`) |
+| `--read [FILTER]` | print visible text, first 150 lines; with a filter, each match **and the line after it** (label → value, e.g. `Chip | Apple M1`). Prefer a filter: an unfiltered web page is thousands of lines |
+| `--read-all` | every visible line, when you really need the whole window |
+| `--drag "A > B"` | drag the element showing text A onto the one showing text B |
 | `--shot` | save the window as a PNG and print its path; send that file when asked for a screenshot |
 
 What it handles for you, so you don't spend turns on it:
@@ -99,6 +101,18 @@ read + screenshot in **4 s**, each as one call. End to end through an agent, the
 Apps drawn without accessibility text (Flutter apps such as RustDesk, games, canvases) expose empty labels, so
 text matching can't work. Use your computer-use tool there: one window capture, click by coordinate, one capture
 to confirm. Type instead of clicking keys whenever the app takes keyboard input.
+
+## Ask first, look only at what the task needs
+
+This is the person's real desktop, signed in to their mail, messages and accounts.
+
+- **Ask before anything other people can see or that can't be undone**: sending a message or email, posting,
+  submitting a form, buying, deleting or moving files, uploading, accepting terms, approving a prompt, changing
+  account or security settings. Say exactly what you are about to do and wait for a yes.
+- **Read only what the task is about.** Don't open or `--read` mail, messages, notes, password managers, clipboard
+  history or other private windows unless that is the request. When you must read a busy window, pass a filter
+  (`--read TEXT`) so unrelated content stays out of the transcript.
+- **Don't type credentials, card numbers or one-time codes.** The person enters those.
 
 ## Never
 

@@ -18,7 +18,9 @@ Steps (run in the order given):
   --menu "A > B > C"  invoke a menu-bar item by its path
   --scroll DIR[:N]    up / down / left / right, N notches (default 5)
   --wait-for TEXT     wait (up to 15 s) until TEXT is visible;  --wait SECONDS: plain pause
-  --read [FILTER]     print visible text; with FILTER, each match and the line after it
+  --read [FILTER]     print visible text (first 150 lines); with FILTER, each match and the line after it
+  --read-all          print all visible text, however long
+  --drag "A > B"      drag the element showing text A onto the one showing text B
   --shot              save the window as PNG and print its path
 
 Text matching is local (exact > prefix > substring) over the app's accessibility tree, menus excluded.
@@ -35,6 +37,8 @@ FIELD_ROLES = {"AXTextField", "AXTextArea", "AXComboBox", "AXSearchField", "AXSe
 # Web pages run to thousands of nodes; the driver's default (2 000 nodes, depth 25) cut a Wikipedia article
 # off inside its table of contents. 10 000 / 60 read the whole Rosetta Stone article in 1.7 s.
 WALK = {"max_elements": 10000, "max_depth": 60}
+# --read output goes straight into the agent's context: a Wikipedia page in Safari came back as 2 165 lines.
+READ_LIMIT = 150
 # Chromium browsers and Electron apps expose their content only after an assistive client sets
 # AXManualAccessibility; scripts/axenable.swift does that, built outside the skill folder so that updating the
 # skill doesn't replace the binary the person granted Accessibility to.
@@ -277,6 +281,11 @@ class Session:
         try:
             return self.d.call("get_window_state", **args)
         except RuntimeError as e:
+            if "not a live window" in str(e) or "window_id_not_found" in str(e):
+                # The window was replaced under us (Finder reopening a folder): pick the current one, retry.
+                self.wait_window()
+                args["window_id"] = self.wid
+                return self.d.call("get_window_state", **args)
             if "timed out" not in str(e):
                 raise
             # Music ran the driver's 20 s walk budget out; depth is what costs (1 500 / 25 still timed out,
@@ -413,6 +422,20 @@ class Session:
         # is reported, not fatal; --wait-for or --read is how a sequence asserts the outcome it needs.
         return label if self.changed_since(before) else f"{label} (no visible change)"
 
+    def drag(self, spec):
+        src, sep, dst = spec.partition(">")
+        if not sep:
+            raise LookupError('--drag needs "FROM > TO"')
+        a = self.find(src.strip(), action=None)
+        b = self.find(dst.strip(), action=None)
+        (x1, y1), (x2, y2) = self.to_pixels(a["frame"]), self.to_pixels(b["frame"])
+        before = self.signature()
+        # cua-driver refuses background drags on macOS ("Background drag is unavailable"): a drag-and-drop has to
+        # go through the window server, so the window comes forward for the gesture.
+        self.act("drag", from_x=x1, from_y=y1, to_x=x2, to_y=y2, duration_ms=600, steps=24, delivery_mode="foreground")
+        label = f"{a.get('label') or a.get('role')} -> {b.get('label') or b.get('role')}"
+        return label if self.changed_since(before) else f"{label} (no visible change)"
+
     def fill(self, spec):
         label, sep, value = spec.partition("=")
         if not sep:
@@ -493,7 +516,7 @@ def parse(argv):
     steps, i = [], 0
     flags = {"--open": 0, "--shot": 0, "--app": 1, "--window": 1, "--url": 1, "--click": 1, "--double": 1,
              "--right": 1, "--fill": 1, "--type": 1, "--key": 1, "--menu": 1, "--scroll": 1, "--wait": 1,
-             "--wait-for": 1}
+             "--wait-for": 1, "--drag": 1, "--read-all": 0}
     while i < len(argv):
         a = argv[i]
         if a == "--read":
@@ -543,6 +566,8 @@ def _run_step(s, kind, val):
         return f"right-clicked {target.get('label')!r}"
     if kind == "--fill":
         return f"filled {s.fill(val)!r}"
+    if kind == "--drag":
+        return f"dragged {s.drag(val)}"
     if kind == "--type":
         s.act("type_text", text=val); return f"typed {len(val)} chars"
     if kind == "--key":
@@ -564,10 +589,13 @@ def _run_step(s, kind, val):
         time.sleep(float(val)); return f"waited {val}s"
     if kind == "--wait-for":
         s.wait_for(val); return f"saw {val!r}"
-    if kind == "--read":
+    if kind in ("--read", "--read-all"):
         time.sleep(0.3)
         texts = s.read(val)
-        print(f"[read{' ' + val if val else ''}] " + " | ".join(texts) if texts else f"[read] nothing matching {val!r}")
+        shown = texts if kind == "--read-all" else texts[:READ_LIMIT]
+        print(f"[read{' ' + val if val else ''}] " + " | ".join(shown) if texts else f"[read] nothing matching {val!r}")
+        if len(shown) < len(texts):
+            print(f"[read] {len(texts) - len(shown)} more lines not shown: narrow with --read TEXT, or use --read-all")
         return f"{len(texts)} texts"
     if kind == "--shot":
         path = os.path.join(shot_dir(), f"cu_{int(time.time() * 1000)}.png")
