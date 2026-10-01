@@ -38,7 +38,10 @@ Steps run in the order given, inside one process. It stops at the first step tha
    dialog or sheet.
 4. Elements that ignore an accessibility "press" (Finder's sidebar rows) get a real mouse click at their centre.
 
-Text is whatever the app shows in your system language: on a Traditional Chinese Mac, `--click 一般`.
+Text is whatever the app shows in your system language: on a Traditional Chinese Mac, `--click 一般`. When no
+visible text matches, `--click` also tries each element's untranslated accessibility identifier, so
+`--click About` still finds 關於本機 in System Settings (its identifier ends in `general.about`). `--read FILTER`
+has no such fallback: plain text carries no identifier, so filter in the screen's language.
 
 ### How `--read FILTER` pairs values
 

@@ -49,4 +49,14 @@ assert cu.best_match(ELS, "missing") is None
 
 assert cu.parse(["--drag", "a.txt > Folder", "--read-all"]) == [("--drag", "a.txt > Folder"), ("--read-all", None)]
 
+# a row whose only visible text is its description, plus its untranslated identifier
+SS = {"tree_markdown": '- [82] AXButton (關於本機) [id=com.apple.systempreferences.general.about actions=[press]]\n'
+                       '- [5] AXTextField "搜尋" [id=_NS:9]\n  - AXStaticText = "管理Mac的整體設定"',
+      "elements": [{"element_index": 82, "role": "AXButton", "label": "關於本機", "actions": ["AXPress"], "frame": {}},
+                   {"element_index": 5, "role": "AXTextField", "label": "搜尋", "frame": {}}]}
+assert "關於本機" in cu.texts_from_markdown(SS["tree_markdown"])
+cu.attach_identifiers(SS)
+assert cu.best_match(SS["elements"], "About")["element_index"] == 82      # English name finds the Chinese row
+assert cu.owner_of_text(SS, "管理Mac的整體設定") is None                   # never resolved to the text field
+
 print("ok")

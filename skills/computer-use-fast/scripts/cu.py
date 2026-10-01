@@ -97,7 +97,10 @@ def texts_from_markdown(md, flt=None):
         if "AXMenu" in ln:  # the menu bar is part of the tree but not of the window
             continue
         ln = re.sub(r'\[(?:id|help)="[^"]*"', "", ln)  # attribute values are not on-screen text
-        for t in re.findall(r'"([^"]+)"', ln) + re.findall(r"AXHeading \(([^)]+)\)", ln):
+        ln = re.sub(r"\[(?:id=|actions=)[^\]]*\]", "", ln)
+        # "Label" in quotes, = "value", and (description): System Settings' rows carry their only visible text in
+        # the description, e.g. `AXButton (關於本機)`, which --read used to drop entirely.
+        for t in re.findall(r'"([^"]+)"', ln) + re.findall(r"AX\w+(?: \"[^\"]*\")?(?: = \"[^\"]*\")? \(([^)]+)\)", ln):
             t = t.strip()
             if t and t not in texts[-3:]:  # a container often repeats its child's text
                 texts.append(t)
@@ -117,7 +120,7 @@ def best_match(els, text, roles=None, action="AXPress"):
     for e in els:
         if e.get("role") in SKIP_ROLES or (roles and e.get("role") not in roles):
             continue
-        for rank_base, field in ((0, "label"), (0, "value"), (3, "help"), (3, "placeholder")):
+        for rank_base, field in ((0, "label"), (0, "value"), (3, "help"), (3, "placeholder"), (6, "ident")):
             lab = norm(e.get(field))
             if lab and want in lab:
                 rank = rank_base + (0 if lab == want else 1 if lab.startswith(want) else 2)
@@ -137,6 +140,22 @@ def best_match(els, text, roles=None, action="AXPress"):
     return target
 
 
+def attach_identifiers(st):
+    """Copy each element's AX identifier from the markdown (`[82] AXButton (關於本機) [id=…general.about …]`) onto
+    the element, as its last dotted segment. Identifiers are not localized, so `--click About` can still find
+    關於本機 on a Chinese system."""
+    by_idx = {e["element_index"]: e for e in st.get("elements", [])}
+    for m in re.finditer(r"\[(\d+)\][^\n]*?\[id=([^\s\]]+)", st.get("tree_markdown", "")):
+        e = by_idx.get(int(m.group(1)))
+        if e is not None and not m.group(2).startswith("_NS:"):
+            e["ident"] = re.split(r"[.:/]", m.group(2))[-1]
+    return st
+
+
+CLICKABLE = {"AXButton", "AXRow", "AXCell", "AXLink", "AXCheckBox", "AXRadioButton", "AXPopUpButton", "AXMenuButton",
+             "AXTab", "AXDisclosureTriangle", "AXOutlineRow", "AXStaticText", "AXImage", "AXGroup"}
+
+
 def owner_of_text(st, text):
     """Text that is not an indexed element of its own (a Finder sidebar row's `AXStaticText = "Applications"`
     is only a markdown line) belongs to the nearest indexed ancestor line above it; return that element."""
@@ -154,7 +173,9 @@ def owner_of_text(st, text):
             continue
         quoted = re.findall(r'"([^"]+)"', ln)
         if stack and any(want == norm(q) for q in quoted):
-            return by_idx.get(stack[-1][1])
+            owner = by_idx.get(stack[-1][1])
+            # Never hand a text line to a field: a long description once resolved to the search box and was clicked.
+            return owner if owner and owner.get("role") in CLICKABLE else None
     return None
 
 
@@ -315,8 +336,13 @@ class Session:
     def find(self, text, roles=None, action="AXPress"):
         # Ask the driver to project the tree onto `text` first (ancestors kept, indices unchanged): far less to
         # ship than a 4 000-node web page. Fall back to the whole tree for matches the projection misses.
-        st = self.state(query=text)
+        st = attach_identifiers(self.state(query=text))
         els = [e for e in st.get("elements", []) if e.get("frame") or e.get("role") == "AXWindow"]
+        if not best_match(els, text, roles, action) and not owner_of_text(st, text):
+            # The text isn't on screen in this language: retry against the untranslated identifiers of the
+            # whole window (the query projection only kept lines containing the text).
+            st = attach_identifiers(self.state())
+            els = [e for e in st.get("elements", []) if e.get("frame") or e.get("role") == "AXWindow"]
         target = best_match(els, text, roles, action) or owner_of_text(st, text) or self.find_elsewhere(text, roles, action)
         if target is None:
             els = self.elements()
