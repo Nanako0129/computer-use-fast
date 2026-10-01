@@ -100,25 +100,35 @@ counted among the 58.
 
 ## 5. Does it take over the screen?
 
-With Finder (or Safari) in front, each command was run and the front app and pointer position were read before
-and after through cua-driver (`list_apps` → `active`, `get_cursor_position`):
+`cu.py` drives apps through [cua-driver](https://github.com/trycua/cua), which runs **natively on your Mac**,
+on your real desktop. It is not CUA's container or virtual-machine sandbox. So the question is whether it gets in
+the way of the person using that desktop.
 
-| Command | Front app before → after | Pointer |
-|---|---|---|
-| Calculator, not running: `--open --type "12*3=" --read` | Finder → Finder | unchanged |
-| System Settings, not running: `--open --click General --click About --read Chip` | Finder → Finder | unchanged |
-| Calculator, already open: `--type "7*6=" --read` | Finder → Finder | unchanged |
-| System Settings, already open: `--click Appearance --read` | Finder → Finder | unchanged |
-| Safari: `--url … --wait-for … --click "Ptolemy V Epiphanes"` | Finder → Finder | unchanged |
-| Safari: `--fill "Search Wikipedia=Hieroglyphs"` | Finder → Finder | unchanged |
-| TextEdit, already open: `--menu "File > New"` | Finder → Finder | unchanged |
-| Finder sidebar row (pixel click, foreground fallback) | Safari → Safari | unchanged |
-| TextEdit, not running: `--open --read` | Finder → **TextEdit** | unchanged |
+Measured with `scripts/watch_focus.py`, which does **not** go through cua-driver: it reads macOS CoreGraphics
+directly every 50 ms while the command runs, recording which app owns the frontmost window and where the pointer
+is. Its own positive controls caught a 1-second switch to Safari and back, and a pointer warp to (600, 400) and
+back. The app named first was in front at the start.
 
-The launch and URL rows were measured after `--open` and `--url` switched to `open -g`. In the run before that
-change, the same launches and the URL brought Calculator, System Settings and Safari to the front. TextEdit creates its first window only when activated, so `cu.py` falls back to a
-normal launch there. Front app and pointer were sampled before and after each command, not continuously: a
-foreground fallback switches windows for a moment and switches back, which a before/after sample does not see.
+| Command | In front at start | Any change in front app (50 ms samples) | Pointer |
+|---|---|---|---|
+| Calculator, not running: `--open --type "12*3=" --read` | Finder | none | never moved |
+| Calculator, open: `--type "7*6=" --read` | Finder | none | never moved |
+| System Settings, not running: `--open --click … --click … --read Chip` | Finder | none | never moved |
+| System Settings, open: `--click Appearance --read` | Finder | none | never moved |
+| Safari: `--url … --wait-for … --click "Ptolemy V Epiphanes"` | Finder | none | never moved |
+| Safari: `--fill "Search Wikipedia=Hieroglyphs"` | Finder | none | never moved |
+| Finder sidebar row (pixel click) | Safari | none | never moved |
+| TextEdit, not running: `--open --read` | Finder | none | never moved |
+| TextEdit, open: `--read` (×2) | Finder | none | never moved |
+| **TextEdit: `--menu "File > New"`** (×3) | Finder | **TextEdit came to the front after ~1.1 s and stayed** | never moved |
+
+The one that takes focus is a menu command that opens a new window: macOS brings an app forward when it opens a
+document window. Typing into an app with several windows uses a brief foreground delivery; that run could not be
+measured cleanly (the previous step had left TextEdit in front) and is not claimed either way.
+
+An earlier version of this table relied on cua-driver's own `active` flag and reported the menu row as "no
+change"; the independent sampler showed otherwise. Before `--open` and `--url` switched to `open -g`, launching
+Calculator and System Settings and opening a Safari URL brought those apps to the front.
 
 ## How to reproduce
 

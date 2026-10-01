@@ -7,7 +7,7 @@ Four steps; the last two are optional but recommended. Needs macOS and Python 3.
 ## 1. Install cua-driver
 
 [cua-driver](https://github.com/trycua/cua) is what actually clicks and reads the screen; `cu.py` tells it what
-to do. Install it with its official installer and grant its permissions:
+to do. It runs natively on your Mac and drives your real desktop; it is not CUA's container or VM sandbox. Install it with its official installer and grant its permissions:
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://cua.ai/driver/install.sh)"

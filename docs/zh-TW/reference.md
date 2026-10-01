@@ -59,13 +59,15 @@ python3 <skill>/scripts/cu.py 步驟 [步驟 …]
 
 | 步驟 | 你會看到 |
 |---|---|
-| 在已開啟視窗裡的 `--click`、`--fill`、`--type`、`--key`、`--read`、`--wait-for`、`--menu` | 什麼都不會變，你的前景 App 保持焦點 |
+| 在已開啟視窗裡的 `--click`、`--fill`、`--type`、`--key`、`--read`、`--wait-for` | 什麼都不會變，你的前景 App 保持焦點 |
+| 會開出新視窗的 `--menu`（檔案 → 新增） | 該 App 會帶著新視窗跳到前面 |
 | `--open`、`--url` | 什麼都不會變，App 和網頁在你目前的 App 後面開啟（`open -g`） |
 | 對「要被帶到前景才會出現第一個視窗」的 App 用 `--open`（文字編輯） | 該 App 會跳到前面 |
 | 對需要真正滑鼠點擊的列（Finder 側邊欄）用 `--click`，而背景點擊被拒絕時 | 視窗短暫到前面讓它點，點完再把你的 App 放回前面 |
 | App 開了好幾個視窗時的 `--type`／`--key` | 同樣短暫切換一下，確保按鍵送進正確的視窗 |
 
-實測數據在 [benchmarks.md](benchmarks.md)。
+實測數據在 [benchmarks.md](benchmarks.md)。想自己驗證，可以用 `python3 scripts/watch_focus.py -- python3 scripts/cu.py …`，
+它不經過 cua-driver，每 50 毫秒取樣一次前景 App 和滑鼠位置。
 
 ## 輸出
 

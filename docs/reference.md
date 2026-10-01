@@ -60,13 +60,16 @@ pointer untouched. A few cases need the target window in front for a moment:
 
 | Step | What you see |
 |---|---|
-| `--click`, `--fill`, `--type`, `--key`, `--read`, `--wait-for`, `--menu` in an open window | Nothing: your front app keeps focus |
+| `--click`, `--fill`, `--type`, `--key`, `--read`, `--wait-for` in an open window | Nothing: your front app keeps focus |
+| `--menu` for an item that opens a new window (File → New) | The app comes to the front with its new window |
 | `--open`, `--url` | Nothing: apps and pages open behind your current app (`open -g`) |
 | `--open` for an app whose first window only appears when it is activated (TextEdit) | The app comes to the front |
 | `--click` on a row that needs a real mouse click (Finder's sidebar), when a background click is refused | The window comes forward for the click, then your app is put back in front |
 | `--type` / `--key` while the app has several windows | The same brief switch, so the keys reach the right window |
 
-The measurements are in [benchmarks.md](benchmarks.md#5-does-it-take-over-the-screen).
+The measurements are in [benchmarks.md](benchmarks.md#5-does-it-take-over-the-screen). Check your own with
+`python3 scripts/watch_focus.py -- python3 scripts/cu.py …`, which samples the front app and pointer every 50 ms
+without going through cua-driver.
 
 ## Output
 

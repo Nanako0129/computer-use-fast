@@ -6,7 +6,8 @@
 
 ## 1. 安裝 cua-driver
 
-真正負責點擊和讀畫面的是 [cua-driver](https://github.com/trycua/cua)，`cu.py` 負責告訴它要做什麼。
+真正負責點擊和讀畫面的是 [cua-driver](https://github.com/trycua/cua)，`cu.py` 負責告訴它要做什麼。它直接跑在你的 Mac 上、
+操作你真正的桌面，不是 CUA 的容器或虛擬機。
 用官方安裝程式安裝，再授予它需要的權限：
 
 ```bash

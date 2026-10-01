@@ -93,24 +93,31 @@ Discord、VS Code、Claude、Word、Excel、PowerPoint、Keynote、郵件、備�
 
 ## 5. 會不會搶走你的畫面？
 
-先讓 Finder（或 Safari）在前景，執行每道指令，並透過 cua-driver（`list_apps` 的 `active`、`get_cursor_position`）
-讀取執行前後的前景 App 與滑鼠位置：
+`cu.py` 透過 [cua-driver](https://github.com/trycua/cua) 操作 App，而 cua-driver **直接跑在你的 Mac 上**，
+操作的是你真正的桌面，不是 CUA 的容器或虛擬機。所以要問的是：它會不會打擾到正在用這個桌面的人。
 
-| 指令 | 前景 App 前 → 後 | 滑鼠 |
-|---|---|---|
-| 計算機，原本沒開：`--open --type "12*3=" --read` | Finder → Finder | 不變 |
-| 系統設定，原本沒開：`--open --click 一般 --click 關於本機 --read 晶片` | Finder → Finder | 不變 |
-| 計算機，已開啟：`--type "7*6=" --read` | Finder → Finder | 不變 |
-| 系統設定，已開啟：`--click 外觀 --read` | Finder → Finder | 不變 |
-| Safari：`--url … --wait-for … --click "Ptolemy V Epiphanes"` | Finder → Finder | 不變 |
-| Safari：`--fill "Search Wikipedia=Hieroglyphs"` | Finder → Finder | 不變 |
-| 文字編輯，已開啟：`--menu "檔案 > 新增"` | Finder → Finder | 不變 |
-| Finder 側邊欄（像素點擊，退回前景模式） | Safari → Safari | 不變 |
-| 文字編輯，原本沒開：`--open --read` | Finder → **文字編輯** | 不變 |
+量測用的是 `scripts/watch_focus.py`，它**不經過** cua-driver：指令執行期間，每 50 毫秒直接從 macOS 的 CoreGraphics
+讀取最前面的視窗屬於哪個 App、滑鼠在哪裡。它自己的對照組抓得到「切到 Safari 1 秒再切回來」，也抓得到「滑鼠移到
+(600, 400) 再移回來」。每列開始時，前景是表中寫的那個 App。
 
-開 App 和開網址的那幾列，是 `--open`、`--url` 改用 `open -g` 之後量的。改之前的那一輪，同樣的開 App 和開網址會把計算機、系統設定和 Safari 帶到前景。
-文字編輯要被帶到前景才會建立第一個視窗，所以 `cu.py` 在這種情況會退回一般的開啟方式。前景 App 和滑鼠只在每道
-指令的前後各取樣一次，不是連續監看：前景模式會短暫切換視窗再切回來，前後取樣看不到這個過程。
+| 指令 | 開始時的前景 | 前景 App 有沒有變（每 50 毫秒取樣） | 滑鼠 |
+|---|---|---|---|
+| 計算機，原本沒開：`--open --type "12*3=" --read` | Finder | 沒有 | 沒動過 |
+| 計算機，已開啟：`--type "7*6=" --read` | Finder | 沒有 | 沒動過 |
+| 系統設定，原本沒開：`--open --click … --click … --read 晶片` | Finder | 沒有 | 沒動過 |
+| 系統設定，已開啟：`--click 外觀 --read` | Finder | 沒有 | 沒動過 |
+| Safari：`--url … --wait-for … --click "Ptolemy V Epiphanes"` | Finder | 沒有 | 沒動過 |
+| Safari：`--fill "Search Wikipedia=Hieroglyphs"` | Finder | 沒有 | 沒動過 |
+| Finder 側邊欄（像素點擊） | Safari | 沒有 | 沒動過 |
+| 文字編輯，原本沒開：`--open --read` | Finder | 沒有 | 沒動過 |
+| 文字編輯，已開啟：`--read`（2 次） | Finder | 沒有 | 沒動過 |
+| **文字編輯：`--menu "檔案 > 新增"`**（3 次） | Finder | **約 1.1 秒後文字編輯跳到前景，之後一直留在前面** | 沒動過 |
+
+會搶走焦點的，是「會開出新視窗的選單」：App 開新文件視窗時，macOS 會把它帶到前面。App 有多個視窗時打字會用
+短暫的前景模式；那一輪量測的起始狀態不乾淨（上一步讓文字編輯留在前景），所以不下任何結論。
+
+這張表的上一個版本是用 cua-driver 自己的 `active` 欄位量的，把選單那一列記成「沒變」；改用獨立取樣器後才發現不對。
+`--open`、`--url` 改用 `open -g` 之前，開計算機、開系統設定、用 Safari 開網址都會把該 App 帶到前景。
 
 ## 怎麼重現
 
