@@ -1,7 +1,7 @@
 ---
 name: computer-use-fast
 description: Do GUI tasks on a Mac in as few agent turns as possible. Try a shell command first, then run the whole click/type/read sequence in ONE terminal call with scripts/cu.py, and fall back to step-by-step computer use only for apps with no accessibility text. Load before any desktop or app task on macOS.
-version: 2.2.0
+version: 2.2.1
 author: Nanako Tsai
 license: MIT
 platforms: [macos]
@@ -88,6 +88,11 @@ not `--click General`.
 
 Exit codes: **0** ok. **3** target not found: the output lists the candidates; pick the right one and rerun,
 don't take a screenshot to look for it. **4** `--wait-for` timed out. **2** driver error.
+
+Trust the output; don't open `cu.py`'s source. Everything you need is in `--help` and this file. If a read is
+ambiguous (two dates, two values), run `--read-all` or a narrower filter once and decide from that: in one
+measured run an agent had the answer from its first call in 14 s, then spent 135 s reading this script's code to
+reconcile a second date in the page's references.
 
 A first-run sheet (a privacy notice, "What's New") sits over an app until someone dismisses it. If it asks the
 person to agree to something, don't click through it for them.

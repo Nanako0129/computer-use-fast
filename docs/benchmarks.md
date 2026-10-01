@@ -132,6 +132,31 @@ An earlier version of this table relied on cua-driver's own `active` flag and re
 change"; the independent sampler showed otherwise. Before `--open` and `--url` switched to `open -g`, launching
 Calculator and System Settings and opening a Safari URL brought those apps to the front.
 
+## 6. Three agents, three tasks, three runs each
+
+`bench/agent_smoke.py` gives each agent the same English prompt, resets the app, and checks the answer. Same
+Mac (system language Traditional Chinese, so the prompt's English labels don't match the screen), skill
+installed for each agent. 2026-10-01, all runs passed.
+
+| Task | Hermes (`gemini-3.8-flash`) | Grok CLI (`grok-4.7-build`) |
+|---|---|---|
+| System Settings → General → About, the chip | 75.2 s (110 / 75 / 36) → **37.0 s** after the fix below | 48.1 s (48 / 98 / 41) → **41.8 s** (42 / 43 / 41) |
+| Calculator 56 × 123 | **24.9 s** (25 / 25 / 24) | **19.8 s** (19 / 21 / 20) |
+| Safari: Rosetta Stone → Ptolemy V, birth date | **38.3 s** (50 / 38 / 38) | 150.5 s (151 / 159 / 144) |
+
+Medians, with the three runs in brackets. Claude Code is not in the table: its credentials live in the login
+keychain, which an SSH session can't read, so the bench couldn't run it non-interactively yet.
+
+What the runs showed, and what changed:
+
+- **System Settings** was slow because the read dropped the pane's buttons (their only text is the AX
+  description) and English labels didn't match the Chinese screen. `cu.py` now reads descriptions and falls
+  back to untranslated identifiers, so `--click General --click About` works on a Chinese system. Grok then did
+  the task in two calls every time. Hermes' remaining spread is its first model turn (35 s in the slow run).
+- **Grok on Safari** had the answer from its first `cu.py` call in 14.2 s. The page also lists "209 BC" in its
+  references, and Grok spent the rest reading `cu.py`'s source to reconcile the two. SKILL.md 2.2.1 tells agents
+  not to do that.
+
 ## How to reproduce
 
 ```bash
