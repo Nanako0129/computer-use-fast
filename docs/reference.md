@@ -53,6 +53,21 @@ printed together with the line after it: `--read Chip` prints `Chip | Apple M1`.
 - Chromium and Electron apps are asked to expose their content, if the helper from
   [setup step 4](setup.md#4-optional-chrome-edge-brave-arc-and-electron-apps) is installed.
 
+## Background or foreground
+
+`cu.py` drives apps through accessibility actions, so most steps leave the app you are using in front and the
+pointer untouched. A few cases need the target window in front for a moment:
+
+| Step | What you see |
+|---|---|
+| `--click`, `--fill`, `--type`, `--key`, `--read`, `--wait-for`, `--menu` in an open window | Nothing: your front app keeps focus |
+| `--open`, `--url` | Nothing: apps and pages open behind your current app (`open -g`) |
+| `--open` for an app whose first window only appears when it is activated (TextEdit) | The app comes to the front |
+| `--click` on a row that needs a real mouse click (Finder's sidebar), when a background click is refused | The window comes forward for the click, then your app is put back in front |
+| `--type` / `--key` while the app has several windows | The same brief switch, so the keys reach the right window |
+
+The measurements are in [benchmarks.md](benchmarks.md#5-does-it-take-over-the-screen).
+
 ## Output
 
 One line per step, then a total:

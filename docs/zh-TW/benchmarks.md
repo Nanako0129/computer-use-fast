@@ -91,6 +91,27 @@ Discord、VS Code、Claude、Word、Excel、PowerPoint、Keynote、郵件、備�
 
 音樂在第一輪失敗（撞到 20 秒走訪上限），加上淺層重讀之後就能用了，已算在 58 個裡。
 
+## 5. 會不會搶走你的畫面？
+
+先讓 Finder（或 Safari）在前景，執行每道指令，並透過 cua-driver（`list_apps` 的 `active`、`get_cursor_position`）
+讀取執行前後的前景 App 與滑鼠位置：
+
+| 指令 | 前景 App 前 → 後 | 滑鼠 |
+|---|---|---|
+| 計算機，原本沒開：`--open --type "12*3=" --read` | Finder → Finder | 不變 |
+| 系統設定，原本沒開：`--open --click 一般 --click 關於本機 --read 晶片` | Finder → Finder | 不變 |
+| 計算機，已開啟：`--type "7*6=" --read` | Finder → Finder | 不變 |
+| 系統設定，已開啟：`--click 外觀 --read` | Finder → Finder | 不變 |
+| Safari：`--url … --wait-for … --click "Ptolemy V Epiphanes"` | Finder → Finder | 不變 |
+| Safari：`--fill "Search Wikipedia=Hieroglyphs"` | Finder → Finder | 不變 |
+| 文字編輯，已開啟：`--menu "檔案 > 新增"` | Finder → Finder | 不變 |
+| Finder 側邊欄（像素點擊，退回前景模式） | Safari → Safari | 不變 |
+| 文字編輯，原本沒開：`--open --read` | Finder → **文字編輯** | 不變 |
+
+開 App 和開網址的那幾列，是 `--open`、`--url` 改用 `open -g` 之後量的。改之前的那一輪，同樣的開 App 和開網址會把計算機、系統設定和 Safari 帶到前景。
+文字編輯要被帶到前景才會建立第一個視窗，所以 `cu.py` 在這種情況會退回一般的開啟方式。前景 App 和滑鼠只在每道
+指令的前後各取樣一次，不是連續監看：前景模式會短暫切換視窗再切回來，前後取樣看不到這個過程。
+
 ## 怎麼重現
 
 ```bash

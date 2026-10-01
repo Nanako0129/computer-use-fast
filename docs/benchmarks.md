@@ -98,6 +98,28 @@ VPN clients (they would cut the test's own connection), virtual machines, and ap
 Music failed in the first pass (the 20-second walk limit) and works since the shallow re-read was added; it is
 counted among the 58.
 
+## 5. Does it take over the screen?
+
+With Finder (or Safari) in front, each command was run and the front app and pointer position were read before
+and after through cua-driver (`list_apps` → `active`, `get_cursor_position`):
+
+| Command | Front app before → after | Pointer |
+|---|---|---|
+| Calculator, not running: `--open --type "12*3=" --read` | Finder → Finder | unchanged |
+| System Settings, not running: `--open --click General --click About --read Chip` | Finder → Finder | unchanged |
+| Calculator, already open: `--type "7*6=" --read` | Finder → Finder | unchanged |
+| System Settings, already open: `--click Appearance --read` | Finder → Finder | unchanged |
+| Safari: `--url … --wait-for … --click "Ptolemy V Epiphanes"` | Finder → Finder | unchanged |
+| Safari: `--fill "Search Wikipedia=Hieroglyphs"` | Finder → Finder | unchanged |
+| TextEdit, already open: `--menu "File > New"` | Finder → Finder | unchanged |
+| Finder sidebar row (pixel click, foreground fallback) | Safari → Safari | unchanged |
+| TextEdit, not running: `--open --read` | Finder → **TextEdit** | unchanged |
+
+The launch and URL rows were measured after `--open` and `--url` switched to `open -g`. In the run before that
+change, the same launches and the URL brought Calculator, System Settings and Safari to the front. TextEdit creates its first window only when activated, so `cu.py` falls back to a
+normal launch there. Front app and pointer were sampled before and after each command, not continuously: a
+foreground fallback switches windows for a moment and switches back, which a before/after sample does not see.
+
 ## How to reproduce
 
 ```bash

@@ -180,7 +180,7 @@ class Session:
             # app in English only. Spotlight's display name is localized, so it resolves either spelling.
             installed = a or find(running=False)
             if installed and installed.get("bundle_id"):
-                cmd = ["open", "-b", installed["bundle_id"]]
+                cmd = ["open", "-g", "-b", installed["bundle_id"]]
             else:
                 # Exact name first: "音樂*" alone matched 音樂辨識 (MusicRecognitionMac) before 音樂 (Music).
                 hit = ""
@@ -189,7 +189,8 @@ class Session:
                     hit = subprocess.run(["mdfind", q], capture_output=True, text=True).stdout.split("\n")[0]
                     if hit:
                         break
-                cmd = ["open", hit] if hit else ["open", "-a", name]
+                cmd = ["open", "-g", hit] if hit else ["open", "-g", "-a", name]
+            # -g: launch without bringing the app forward, so the person's front app keeps focus.
             subprocess.run(cmd, check=False, capture_output=True)
             for _ in range(20):
                 a = find()
@@ -201,7 +202,15 @@ class Session:
             raise LookupError(f"{name} runs only as a menu-bar or background agent: it has no windows to drive"
                               if agent else f"app not found or could not be opened: {name}")
         self.pid, self.app, self.bundle = a["pid"], a["name"], a.get("bundle_id")
-        self.wait_window()
+        try:
+            self.wait_window(timeout=10 if not launch else 6)
+        except LookupError:
+            if not launch:
+                raise
+            # Some apps create their first window only when brought forward (TextEdit shows its open panel on
+            # activation, nothing when launched with -g). Finishing the task beats keeping focus here.
+            subprocess.run(["open", "-b", self.bundle] if self.bundle else ["open", "-a", name], capture_output=True)
+            self.wait_window()
         path = a.get("launch_path") or ""
         if self.bundle in CHROMIUM or os.path.isdir(os.path.join(path, "Contents/Frameworks/Electron Framework.framework")):
             self.expose_chromium()
@@ -389,8 +398,16 @@ class Session:
         else:
             # Rows and cells (Finder's sidebar) ignore an accessibility press and only react to a real mouse
             # click, so click the centre of the element's frame instead.
-            x, y = self.to_pixels(target["frame"])
-            self.d.call(tool, x=x, y=y, pid=self.pid, window_id=self.wid)
+            try:
+                x, y = self.to_pixels(target["frame"])
+                self.d.call(tool, x=x, y=y, pid=self.pid, window_id=self.wid)
+            except RuntimeError as e:
+                if "off_space_or_ax_unresolved" not in str(e):
+                    raise
+                # The driver won't post a background pixel click into this window (Finder after Time Machine
+                # had covered the screen); a foreground click brings the window forward for the click.
+                x, y = self.to_pixels(target["frame"])
+                self.d.call(tool, x=x, y=y, pid=self.pid, window_id=self.wid, delivery_mode="foreground")
         label = target.get("label") or target.get("help") or target.get("role")
         # Clicking what is already selected (the pane that is already open) legitimately changes nothing, so this
         # is reported, not fatal; --wait-for or --read is how a sequence asserts the outcome it needs.
@@ -504,10 +521,10 @@ def run_step(s, kind, val):
 def _run_step(s, kind, val):
     if kind == "--url":
         if s.bundle:
-            subprocess.run(["open", "-b", s.bundle, val], check=True, capture_output=True)
+            subprocess.run(["open", "-g", "-b", s.bundle, val], check=True, capture_output=True)
             s.wait_window()
         else:
-            subprocess.run(["open", val], check=True, capture_output=True)
+            subprocess.run(["open", "-g", val], check=True, capture_output=True)
         return val
     if kind == "--window":
         s.window_title = val

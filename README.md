@@ -14,6 +14,9 @@
 - **One command per task, not one agent turn per click.** About 90% of a step-by-step run is the agent
   thinking between clicks. `cu.py` opens the app, clicks buttons by their visible text, types, picks menus,
   fills fields, waits, reads the screen and saves a screenshot in a single call, so those turns disappear.
+- **Runs in the background.** It acts through macOS accessibility, not the mouse: clicking, typing, filling
+  fields, menus, and for most apps even opening them or a page left the app you were using in front and the pointer where it
+  was. You can keep working while the agent drives another app. [Measured →](docs/benchmarks.md#5-does-it-take-over-the-screen)
 - **Works on most apps.** 58 of the 74 apps tested on one Mac, including Safari, Chrome, Discord, VS Code,
   Word, Excel, Keynote, Mail, Notes, Finder and System Settings. Apps with nothing to drive get a clear reason.
 - **Any system language, no API key.** Localized app and button names work (計算機, 一般). It all runs on
