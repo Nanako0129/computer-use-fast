@@ -22,6 +22,23 @@ agent spends one turn instead of six.
 
 One run each, on one machine; your numbers will depend on your model's latency.
 
+### Compared with a Jev-based skill
+
+[jev-computer-use](https://github.com/kerpopule/hermes-jev-skills) speeds up the same problem from the other
+end: a small model (TypeSafe Jev) picks each next action in about 0.3 s instead of the agent's main model.
+Measured on the same machine, same agent, same task (System Settings → General → About, "what chip?"):
+
+| | Time | Tool calls |
+|---|---|---|
+| Step by step, no skill | 108.6 s | 5 |
+| jev-computer-use | 265.2 s | 13 |
+| jev-computer-use with its `--plan` key set | 94.4 s | — (the runner failed twice; the agent finished by hand) |
+| **this skill** | **27.8 s** | 2 |
+
+Jev's choices were fast and accurate (confidence 0.98–0.99 on the right element); the time went to the turns
+around them: the agent still wrote each command, read each result and re-tried when the runner stopped. One
+`cu.py` call removes those turns instead. It also needs no API key. One run each; your numbers will differ.
+
 ## Requirements
 
 | | |
